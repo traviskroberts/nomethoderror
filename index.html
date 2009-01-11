@@ -17,7 +17,7 @@
 
             $.getJSON('http://github.com/api/v1/json/' + login + '?callback=?', function(data) {
                 var repos = $.grep(data.user.repositories, function(item) {
-                    return !item.fork && item.name != login + ".github.com"
+                    return !item.fork
                 })
                 repos.sort(function(a, b) { return b.watchers - a.watchers })
 
