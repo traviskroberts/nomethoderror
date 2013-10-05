@@ -3,8 +3,8 @@
 # ----------------------- #
 
 url: http://travisr.github.io
-title: Travis Roberts
-subtitle: Rails and Stuff
+title: NoMethodError
+subtitle: <span class="raise">raise</span> <span class="string">"a blog about rails and stuff"</span>
 author: Travis Roberts
 simple_search: http://google.com/search
 description:
