@@ -8,6 +8,7 @@
 _deploy
 public
 sass.old
+source
 source.old
 source/_stash
 source/stylesheets/screen.css
