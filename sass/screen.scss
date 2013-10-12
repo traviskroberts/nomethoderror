@@ -1,10 +1,17 @@
 @import "compass";
 @include global-reset;
+<<<<<<< HEAD
+=======
+@include reset-html5;
+>>>>>>> 92bb9e1fd9a6cbdc498c081cd7de2cb0fd57e849
 
 @import "custom/colors";
 @import "custom/fonts";
 @import "custom/layout";
 @import "base";
 @import "partials";
+<<<<<<< HEAD
 @import "plugins/**/*";
+=======
+>>>>>>> 92bb9e1fd9a6cbdc498c081cd7de2cb0fd57e849
 @import "custom/styles";

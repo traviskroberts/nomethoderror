@@ -3,7 +3,11 @@
   <ul id="recent_posts">
     {% for post in site.posts limit: site.recent_posts %}
       <li class="post">
+<<<<<<< HEAD
         <a href="{{ root_url }}{{ post.url }}">{% if site.titlecase %}{{ post.title | titlecase }}{% else %}{{ post.title }}{% endif %}</a>
+=======
+        <a href="{{ root_url }}{{ post.url }}">{{ post.title }}</a>
+>>>>>>> 92bb9e1fd9a6cbdc498c081cd7de2cb0fd57e849
       </li>
     {% endfor %}
   </ul>

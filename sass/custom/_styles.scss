@@ -1,2 +1,34 @@
 // This File is imported last, and will override other styles in the cascade
 // Add styles here to make changes without digging in too much
+<<<<<<< HEAD
+=======
+body > header {
+  h1 {
+    font-family: Arvo, Georgia, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 3em;
+    font-weight: bold;
+
+    a {
+      color: #555 !important;
+    }
+  }
+
+  h2 {
+    font-size: 1.2em;
+
+    .raise {
+      color: #700;
+    }
+
+    .string {
+      color: green;
+    }
+  }
+}
+
+html .gist .gist-file {
+  .gist-meta a[href*='#file'] {
+    display: none;
+  }
+}
+>>>>>>> 92bb9e1fd9a6cbdc498c081cd7de2cb0fd57e849
