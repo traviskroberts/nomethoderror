@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-body > nav {
-  position: relative;
-  background-color: $nav-bg;
-  @include background($nav-bg-front, $nav-bg-back);
-  border: {
-    top: 1px solid $nav-border-top;
-    bottom: 1px solid $nav-border-bottom; }
-  padding-top: .35em;
-  padding-bottom: .35em;
-=======
 nav {
   position: relative;
   @include background($nav-bg-front, $nav-bg-back);
@@ -29,16 +18,12 @@ nav {
   }
 
   margin: 0 auto;
->>>>>>> 92bb9e1fd9a6cbdc498c081cd7de2cb0fd57e849
   form {
     @include background-clip(padding-box);
     margin: 0; padding: 0;
     .search {
       padding: .3em .5em 0;
-<<<<<<< HEAD
-=======
       margin: .2em 0 0 0;
->>>>>>> 92bb9e1fd9a6cbdc498c081cd7de2cb0fd57e849
       font-size: .85em;
       font-family: $sans;
       line-height: 1.1em;
@@ -46,15 +31,9 @@ nav {
       @include border-radius(.5em);
       @include background-clip(padding-box);
       @include box-shadow(lighten($nav-bg, 2) 0 1px);
-<<<<<<< HEAD
-      background-color: lighten($nav-bg, 15);
-      border: 1px solid $nav-border;
-      color: #888;
-=======
       background-color: lighten($nav-bg, 35);
       border: 1px solid $nav-border;
       color: #ddd;
->>>>>>> 92bb9e1fd9a6cbdc498c081cd7de2cb0fd57e849
       &:focus {
         color: #444;
         border-color: #80b1df;
@@ -70,11 +49,7 @@ nav {
   }
   ul { display: none; }
   @media only screen and (min-width: 550px) {
-<<<<<<< HEAD
-    font-size: .9em;
-=======
     font-size: 1.1em;
->>>>>>> 92bb9e1fd9a6cbdc498c081cd7de2cb0fd57e849
     ul {
       @include horizontal-list(0);
       float: left;
@@ -135,11 +110,7 @@ nav {
   }
 }
 .no-placeholder {
-<<<<<<< HEAD
-  body > nav .search {
-=======
   nav .search {
->>>>>>> 92bb9e1fd9a6cbdc498c081cd7de2cb0fd57e849
     background: lighten($nav-bg, 15) image-url('search.png') .3em .25em no-repeat;
     text-indent: 1.3em;
   }
@@ -159,11 +130,7 @@ nav {
   &:hover:after { background-color: lighten($nav-color, 20); }
 }
 .maskImage {
-<<<<<<< HEAD
-  body > nav {
-=======
   nav {
->>>>>>> 92bb9e1fd9a6cbdc498c081cd7de2cb0fd57e849
     @media only screen and (min-width: 550px) {
       ul[data-subscription$=email] + form {
         width: $sidebar-width-medium - $pad-medium*2 - $sidebar-pad-medium - 32px;
@@ -180,9 +147,6 @@ nav {
   a[rel=subscribe-email]{ @include mask-subscription-nav('email.png'); }
 }
 
-<<<<<<< HEAD
-=======
 #navigation {
     background-color: $nav-bg;
 }
->>>>>>> 92bb9e1fd9a6cbdc498c081cd7de2cb0fd57e849

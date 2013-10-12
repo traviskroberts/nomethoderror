@@ -46,11 +46,7 @@ module Jekyll
     end
 
     def get_gist_url_for(gist, file)
-<<<<<<< HEAD
-      "https://raw.github.com/gist/#{gist}/#{file}"
-=======
       "https://gist.github.com/raw/#{gist}/#{file}"
->>>>>>> 92bb9e1fd9a6cbdc498c081cd7de2cb0fd57e849
     end
 
     def cache(gist, file, data)
@@ -76,9 +72,6 @@ module Jekyll
 
     def get_gist_from_web(gist, file)
       gist_url          = get_gist_url_for gist, file
-<<<<<<< HEAD
-      raw_uri           = URI.parse gist_url
-=======
       data = get_web_content gist_url
       data = handle_gist_redirecting data
       if data.code.to_i != 200
@@ -102,7 +95,6 @@ module Jekyll
 
     def get_web_content(url)
       raw_uri           = URI.parse url
->>>>>>> 92bb9e1fd9a6cbdc498c081cd7de2cb0fd57e849
       proxy             = ENV['http_proxy']
       if proxy
         proxy_uri       = URI.parse(proxy)
@@ -114,15 +106,6 @@ module Jekyll
       https.verify_mode = OpenSSL::SSL::VERIFY_NONE
       request           = Net::HTTP::Get.new raw_uri.request_uri
       data              = https.request request
-<<<<<<< HEAD
-      if data.code.to_i != 200
-        raise RuntimeError, "Gist replied with #{data.code} for #{gist_url}"
-      end
-      data              = data.body
-      cache gist, file, data unless @cache_disabled
-      data
-=======
->>>>>>> 92bb9e1fd9a6cbdc498c081cd7de2cb0fd57e849
     end
   end
 

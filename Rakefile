@@ -9,20 +9,12 @@ ssh_port       = "22"
 document_root  = "~/website.com/"
 rsync_delete   = false
 rsync_args     = ""  # Any extra arguments to pass to rsync
-<<<<<<< HEAD
-deploy_default = "rsync"
-
-# This will be configured for you when you run config_deploy
-deploy_branch  = "gh-pages"
-=======
 deploy_default = "push"
 
 # This will be configured for you when you run config_deploy
 deploy_branch  = "master"
->>>>>>> 92bb9e1fd9a6cbdc498c081cd7de2cb0fd57e849
 
 ## -- Misc Configs -- ##
-
 public_dir      = "public"    # compiled site directory
 source_dir      = "source"    # source file directory
 blog_index_dir  = 'source'    # directory for your blog's index page (if you put your index in source/blog/index.html, set this to 'source/blog')
@@ -255,7 +247,7 @@ desc "deploy public directory to github pages"
 multitask :push do
   puts "## Deploying branch to Github Pages "
   puts "## Pulling any updates from Github Pages "
-  cd "#{deploy_dir}" do 
+  cd "#{deploy_dir}" do
     system "git pull"
   end
   (Dir["#{deploy_dir}/*"]).each { |f| rm_rf(f) }

@@ -1,30 +1,18 @@
 body > header {
   background: $header-bg;
-<<<<<<< HEAD
-  h1 {
-    display: inline-block;
-    margin: 0;
-=======
   text-align: center;
   h1 {
     font-family: 'Merienda', cursive;
     font-size: 48px;
     margin-bottom: 6px;
->>>>>>> 92bb9e1fd9a6cbdc498c081cd7de2cb0fd57e849
     a, a:visited, a:hover {
       color: $title_color;
       text-decoration: none;
     }
   }
   h2 {
-<<<<<<< HEAD
-    margin: .2em 0 0;
-    @extend .sans;
-    font-size: 1em;
-=======
     @extend .sans;
     font-size: 16px;
->>>>>>> 92bb9e1fd9a6cbdc498c081cd7de2cb0fd57e849
     color: $subtitle-color;
     font-weight: normal;
   }

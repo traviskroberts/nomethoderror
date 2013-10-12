@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-body > footer {
-  @extend .sans;
-  font-size: .8em;
-  color: $footer-color;
-  text-shadow: lighten($footer-bg, 5) 0 1px;
-  background-color: $footer-bg;
-  @include background($footer-bg-front, $footer-bg-back);
-  border-top: 1px solid $footer-border-top;
-=======
 #body > footer {
   @extend .sans;
   font-size: .8em;
   color: $footer-color;
   background-color: $footer-bg;
   @include background($footer-bg-front, $footer-bg-back);
->>>>>>> 92bb9e1fd9a6cbdc498c081cd7de2cb0fd57e849
   position: relative;
   padding-top: 1em;
   padding-bottom: 1em;
