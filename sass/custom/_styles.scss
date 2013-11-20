@@ -3,6 +3,7 @@
 code {
   background-color: #555;
   color: #fff;
+  font-size: 1em;
   padding: 2px 5px;
 }
 
@@ -30,8 +31,10 @@ body > header {
   }
 }
 
-html .gist .gist-file {
-  .gist-meta a[href*='#file'] {
+html .gist {
+  margin-bottom: 1.5em;
+
+  .gist-file .gist-meta a[href*='#file'] {
     display: none;
   }
 }
