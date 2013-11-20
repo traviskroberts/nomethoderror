@@ -4,7 +4,7 @@
 
 url: http://nomethoderror.com
 title: NoMethodError
-subtitle: <span class="raise">raise</span> <span class="string">"a blog about rails and stuff"</span>
+subtitle: '<span class="raise">raise</span> <span class="string">"a blog about rails, javascript, and other stuff"</span>'
 author: Travis Roberts
 simple_search: http://google.com/search
 description:
@@ -94,7 +94,7 @@ disqus_short_name: travisr
 disqus_show_comment_count: false
 
 # Google Analytics
-google_analytics_tracking_id:
+google_analytics_tracking_id: UA-2032096-4
 
 # Facebook Like
 facebook_like: false
