@@ -3,7 +3,7 @@ layout: post
 title: "Track Backbone.js Page Views with Google Analytics"
 date: 2013-11-19 19:42
 comments: true
-categories:
+categories: [backbone.js]
 ---
 
 Google Analytics tracks page views based on evaluating the tracking code on page load. Backbone.js makes this difficult because the page never reloads. Fortunately, it's super easy to add a function to the Backbone router to manually track each route.
