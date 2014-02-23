@@ -3,7 +3,7 @@ layout: post
 title: "Converting a Rails Database from mySQL to PostgreSQL"
 date: 2013-10-03 18:18
 comments: true
-categories: [rails, mysql, postgres]
+categories: [rails, mysql, postgresql]
 ---
 
 The [taps](https://github.com/ricardochimal/taps) gem allows you to transfer database structure and data easily between db types.
