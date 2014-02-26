@@ -10,7 +10,7 @@ If you have a form on your Rails site, chances are you get a fair amount of spam
 
 There are gems available that will add a honeypot for you, but if you prefer to implement it yourself, it's very straightforward.
 
-In your form, just add an extra field that you'll use to detect unauthorized submissions. Make sure to name it something normal so spam bots will populate it. I prefer to use the name "content". I've also added some inline hint text in case a user with a screen reader fills out the form.
+In your form, just add an extra field that you'll use to detect unauthorized submissions. Make sure to name it something normal so spam bots will populate it. I prefer to use the name "content". Notice that the field has its tabindex attribute set to -1. This will prevent the field from being selected if a user tabs through the field. I've also added some inline hint text in case a user with a screen reader fills out the form.
 
 {% gist 9201887 1_form.erb %}
 
