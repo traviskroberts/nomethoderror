@@ -2,7 +2,7 @@
 #      Main Configs       #
 # ----------------------- #
 
-url: http://nomethoderror.com
+url: http://nomethoderror.com/
 title: NoMethodError
 subtitle: '<span class="raise">raise</span> <span class="string">"a blog about rails, javascript, and other stuff"</span>'
 author: Travis Roberts
