@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: backbone | NoMethodError]]></title>
-  <link href="http://nomethoderror.com/nomethoderror/blog/categories/backbone/atom.xml" rel="self"/>
-  <link href="http://nomethoderror.com/nomethoderror/"/>
-  <updated>2015-04-09T14:18:49-05:00</updated>
-  <id>http://nomethoderror.com/nomethoderror/</id>
+  <link href="http://nomethoderror.com//blog/categories/backbone/atom.xml" rel="self"/>
+  <link href="http://nomethoderror.com//"/>
+  <updated>2015-04-09T14:19:37-05:00</updated>
+  <id>http://nomethoderror.com//</id>
   <author>
     <name><![CDATA[Travis Roberts]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Track Backbone.js Page Views with Google Analytics]]></title>
-    <link href="http://nomethoderror.com/nomethoderror/blog/2013/11/19/track-backbone-dot-js-page-views-with-google-analytics/"/>
+    <link href="http://nomethoderror.com//blog/2013/11/19/track-backbone-dot-js-page-views-with-google-analytics/"/>
     <updated>2013-11-19T19:42:00-06:00</updated>
-    <id>http://nomethoderror.com/nomethoderror/blog/2013/11/19/track-backbone-dot-js-page-views-with-google-analytics</id>
+    <id>http://nomethoderror.com//blog/2013/11/19/track-backbone-dot-js-page-views-with-google-analytics</id>
     <content type="html"><![CDATA[<p>Google Analytics tracks page views based on evaluating the tracking code on page load. Backbone.js makes this difficult because the page never reloads. Fortunately, it&rsquo;s super easy to add a function to the Backbone router to manually track each route.</p>
 
 <h2>Newer Analytics Code</h2>

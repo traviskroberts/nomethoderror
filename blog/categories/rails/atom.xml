@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: rails | NoMethodError]]></title>
-  <link href="http://nomethoderror.com/nomethoderror/blog/categories/rails/atom.xml" rel="self"/>
-  <link href="http://nomethoderror.com/nomethoderror/"/>
-  <updated>2015-04-09T14:18:49-05:00</updated>
-  <id>http://nomethoderror.com/nomethoderror/</id>
+  <link href="http://nomethoderror.com//blog/categories/rails/atom.xml" rel="self"/>
+  <link href="http://nomethoderror.com//"/>
+  <updated>2015-04-09T14:19:37-05:00</updated>
+  <id>http://nomethoderror.com//</id>
   <author>
     <name><![CDATA[Travis Roberts]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[ActiveAdmin: Redirect to Index on Create/Update]]></title>
-    <link href="http://nomethoderror.com/nomethoderror/blog/2014/03/10/activeadmin-redirect-to-index-on-create-update/"/>
+    <link href="http://nomethoderror.com//blog/2014/03/10/activeadmin-redirect-to-index-on-create-update/"/>
     <updated>2014-03-10T21:46:18-05:00</updated>
-    <id>http://nomethoderror.com/nomethoderror/blog/2014/03/10/activeadmin-redirect-to-index-on-create-update</id>
+    <id>http://nomethoderror.com//blog/2014/03/10/activeadmin-redirect-to-index-on-create-update</id>
     <content type="html"><![CDATA[<p>By default, <a href="http://activeadmin.info/">ActiveAdmin</a> will display the <code>:show</code> action on create or update of a resource. Personally, I&rsquo;d rather redirect to the <code>:index</code> action as long as the resource is valid.</p>
 
 <p>You can overwrite ActiveAdmin&rsquo;s default behavior using the <code>controller</code> block.</p>
@@ -50,9 +50,9 @@ end</code></pre></noscript></div>
   
   <entry>
     <title type="html"><![CDATA[Simple Rails Form Honeypot]]></title>
-    <link href="http://nomethoderror.com/nomethoderror/blog/2014/02/26/simple-rails-form-honeypot/"/>
+    <link href="http://nomethoderror.com//blog/2014/02/26/simple-rails-form-honeypot/"/>
     <updated>2014-02-26T20:48:48-06:00</updated>
-    <id>http://nomethoderror.com/nomethoderror/blog/2014/02/26/simple-rails-form-honeypot</id>
+    <id>http://nomethoderror.com//blog/2014/02/26/simple-rails-form-honeypot</id>
     <content type="html"><![CDATA[<p>If you have a form on your Rails site, chances are you get a fair amount of spam submissions from automated bots. One solution for preventing spam is by using a captcha field. They usually work very well to prevent spam, but they add a burden to human users. Another, less intrusive solution is to use a honeypot. A honeypot is a field that only bots can see, so you can know a form submission is spam if that field has a value.</p>
 
 <p>There are gems available that will add a honeypot for you, but if you prefer to implement it yourself, it&rsquo;s very straightforward.</p>
@@ -123,9 +123,9 @@ end
   
   <entry>
     <title type="html"><![CDATA[ActiveAdmin: Custom MetaSearch Filter]]></title>
-    <link href="http://nomethoderror.com/nomethoderror/blog/2014/02/23/activeadmin-custom-metasearch-filter/"/>
+    <link href="http://nomethoderror.com//blog/2014/02/23/activeadmin-custom-metasearch-filter/"/>
     <updated>2014-02-23T17:06:00-06:00</updated>
-    <id>http://nomethoderror.com/nomethoderror/blog/2014/02/23/activeadmin-custom-metasearch-filter</id>
+    <id>http://nomethoderror.com//blog/2014/02/23/activeadmin-custom-metasearch-filter</id>
     <content type="html"><![CDATA[<p>Recently, I had the need to create a custom ActiveAdmin filter for a site I was working on. I couldn&rsquo;t find much information on the subject, but after digging around, it turns out that it&rsquo;s pretty easy.</p>
 
 <p>Here are my (admittedly contrived) models. You can see that a User belongs to an Account and an Account belongs to a Group. For this example, let&rsquo;s say I want a filter in ActiveAdmin on the User resource that lists all the Groups.</p>
@@ -179,9 +179,9 @@ end</code></pre></noscript></div>
   
   <entry>
     <title type="html"><![CDATA[ActiveRecord Random Ordering with Pagination]]></title>
-    <link href="http://nomethoderror.com/nomethoderror/blog/2014/02/05/activerecord-random-ordering-with-pagination/"/>
+    <link href="http://nomethoderror.com//blog/2014/02/05/activerecord-random-ordering-with-pagination/"/>
     <updated>2014-02-05T21:18:00-06:00</updated>
-    <id>http://nomethoderror.com/nomethoderror/blog/2014/02/05/activerecord-random-ordering-with-pagination</id>
+    <id>http://nomethoderror.com//blog/2014/02/05/activerecord-random-ordering-with-pagination</id>
     <content type="html"><![CDATA[<p>When I created <a href="http://nshvll.org/">nshvll.org</a>, I wanted the ability to show the user a randomly ordered list of members. I also wanted to paginate the results, and I didn&rsquo;t know if it was possible to have both. After a little research, I found that you can pass a seed to the mySQL <code>RAND()</code> function and have it return an identical list each time it&rsquo;s called.</p>
 
 <h2>mySQL</h2>
@@ -255,9 +255,9 @@ end</code></pre></noscript></div>
   
   <entry>
     <title type="html"><![CDATA[Converting a Rails Database from mySQL to PostgreSQL]]></title>
-    <link href="http://nomethoderror.com/nomethoderror/blog/2013/10/03/converting-a-rails-database-from-mysql-to-postgresql/"/>
+    <link href="http://nomethoderror.com//blog/2013/10/03/converting-a-rails-database-from-mysql-to-postgresql/"/>
     <updated>2013-10-03T18:18:00-05:00</updated>
-    <id>http://nomethoderror.com/nomethoderror/blog/2013/10/03/converting-a-rails-database-from-mysql-to-postgresql</id>
+    <id>http://nomethoderror.com//blog/2013/10/03/converting-a-rails-database-from-mysql-to-postgresql</id>
     <content type="html"><![CDATA[<p>The <a href="https://github.com/ricardochimal/taps">taps</a> gem allows you to transfer database structure and data easily between db types.</p>
 
 <h2>Add the necessary gems to your Gemfile</h2>

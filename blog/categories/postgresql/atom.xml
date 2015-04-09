@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: postgresql | NoMethodError]]></title>
-  <link href="http://nomethoderror.com/nomethoderror/blog/categories/postgresql/atom.xml" rel="self"/>
-  <link href="http://nomethoderror.com/nomethoderror/"/>
-  <updated>2015-04-09T14:18:49-05:00</updated>
-  <id>http://nomethoderror.com/nomethoderror/</id>
+  <link href="http://nomethoderror.com//blog/categories/postgresql/atom.xml" rel="self"/>
+  <link href="http://nomethoderror.com//"/>
+  <updated>2015-04-09T14:19:37-05:00</updated>
+  <id>http://nomethoderror.com//</id>
   <author>
     <name><![CDATA[Travis Roberts]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[ActiveRecord Random Ordering with Pagination]]></title>
-    <link href="http://nomethoderror.com/nomethoderror/blog/2014/02/05/activerecord-random-ordering-with-pagination/"/>
+    <link href="http://nomethoderror.com//blog/2014/02/05/activerecord-random-ordering-with-pagination/"/>
     <updated>2014-02-05T21:18:00-06:00</updated>
-    <id>http://nomethoderror.com/nomethoderror/blog/2014/02/05/activerecord-random-ordering-with-pagination</id>
+    <id>http://nomethoderror.com//blog/2014/02/05/activerecord-random-ordering-with-pagination</id>
     <content type="html"><![CDATA[<p>When I created <a href="http://nshvll.org/">nshvll.org</a>, I wanted the ability to show the user a randomly ordered list of members. I also wanted to paginate the results, and I didn&rsquo;t know if it was possible to have both. After a little research, I found that you can pass a seed to the mySQL <code>RAND()</code> function and have it return an identical list each time it&rsquo;s called.</p>
 
 <h2>mySQL</h2>
@@ -91,9 +91,9 @@ end</code></pre></noscript></div>
   
   <entry>
     <title type="html"><![CDATA[Converting a Rails Database from mySQL to PostgreSQL]]></title>
-    <link href="http://nomethoderror.com/nomethoderror/blog/2013/10/03/converting-a-rails-database-from-mysql-to-postgresql/"/>
+    <link href="http://nomethoderror.com//blog/2013/10/03/converting-a-rails-database-from-mysql-to-postgresql/"/>
     <updated>2013-10-03T18:18:00-05:00</updated>
-    <id>http://nomethoderror.com/nomethoderror/blog/2013/10/03/converting-a-rails-database-from-mysql-to-postgresql</id>
+    <id>http://nomethoderror.com//blog/2013/10/03/converting-a-rails-database-from-mysql-to-postgresql</id>
     <content type="html"><![CDATA[<p>The <a href="https://github.com/ricardochimal/taps">taps</a> gem allows you to transfer database structure and data easily between db types.</p>
 
 <h2>Add the necessary gems to your Gemfile</h2>

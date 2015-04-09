@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: 
 
-Sitemap: http://nomethoderror.com/nomethoderror/sitemap.xml 
+Sitemap: http://nomethoderror.com//sitemap.xml 

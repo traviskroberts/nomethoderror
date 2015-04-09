@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: git | NoMethodError]]></title>
-  <link href="http://nomethoderror.com/nomethoderror/blog/categories/git/atom.xml" rel="self"/>
-  <link href="http://nomethoderror.com/nomethoderror/"/>
-  <updated>2015-04-09T14:18:49-05:00</updated>
-  <id>http://nomethoderror.com/nomethoderror/</id>
+  <link href="http://nomethoderror.com//blog/categories/git/atom.xml" rel="self"/>
+  <link href="http://nomethoderror.com//"/>
+  <updated>2015-04-09T14:19:37-05:00</updated>
+  <id>http://nomethoderror.com//</id>
   <author>
     <name><![CDATA[Travis Roberts]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Git Essentials - Hack &amp; Ship]]></title>
-    <link href="http://nomethoderror.com/nomethoderror/blog/2013/10/12/git-essentials-hack-and-ship/"/>
+    <link href="http://nomethoderror.com//blog/2013/10/12/git-essentials-hack-and-ship/"/>
     <updated>2013-10-12T11:44:00-05:00</updated>
-    <id>http://nomethoderror.com/nomethoderror/blog/2013/10/12/git-essentials-hack-and-ship</id>
+    <id>http://nomethoderror.com//blog/2013/10/12/git-essentials-hack-and-ship</id>
     <content type="html"><![CDATA[<p>If you&rsquo;re like me, your normal git workflow looks something like this:</p>
 
 <ol>

@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: activeadmin | NoMethodError]]></title>
-  <link href="http://nomethoderror.com/nomethoderror/blog/categories/activeadmin/atom.xml" rel="self"/>
-  <link href="http://nomethoderror.com/nomethoderror/"/>
-  <updated>2015-04-09T14:18:49-05:00</updated>
-  <id>http://nomethoderror.com/nomethoderror/</id>
+  <link href="http://nomethoderror.com//blog/categories/activeadmin/atom.xml" rel="self"/>
+  <link href="http://nomethoderror.com//"/>
+  <updated>2015-04-09T14:19:37-05:00</updated>
+  <id>http://nomethoderror.com//</id>
   <author>
     <name><![CDATA[Travis Roberts]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[ActiveAdmin: Redirect to Index on Create/Update]]></title>
-    <link href="http://nomethoderror.com/nomethoderror/blog/2014/03/10/activeadmin-redirect-to-index-on-create-update/"/>
+    <link href="http://nomethoderror.com//blog/2014/03/10/activeadmin-redirect-to-index-on-create-update/"/>
     <updated>2014-03-10T21:46:18-05:00</updated>
-    <id>http://nomethoderror.com/nomethoderror/blog/2014/03/10/activeadmin-redirect-to-index-on-create-update</id>
+    <id>http://nomethoderror.com//blog/2014/03/10/activeadmin-redirect-to-index-on-create-update</id>
     <content type="html"><![CDATA[<p>By default, <a href="http://activeadmin.info/">ActiveAdmin</a> will display the <code>:show</code> action on create or update of a resource. Personally, I&rsquo;d rather redirect to the <code>:index</code> action as long as the resource is valid.</p>
 
 <p>You can overwrite ActiveAdmin&rsquo;s default behavior using the <code>controller</code> block.</p>
@@ -50,9 +50,9 @@ end</code></pre></noscript></div>
   
   <entry>
     <title type="html"><![CDATA[ActiveAdmin: Custom MetaSearch Filter]]></title>
-    <link href="http://nomethoderror.com/nomethoderror/blog/2014/02/23/activeadmin-custom-metasearch-filter/"/>
+    <link href="http://nomethoderror.com//blog/2014/02/23/activeadmin-custom-metasearch-filter/"/>
     <updated>2014-02-23T17:06:00-06:00</updated>
-    <id>http://nomethoderror.com/nomethoderror/blog/2014/02/23/activeadmin-custom-metasearch-filter</id>
+    <id>http://nomethoderror.com//blog/2014/02/23/activeadmin-custom-metasearch-filter</id>
     <content type="html"><![CDATA[<p>Recently, I had the need to create a custom ActiveAdmin filter for a site I was working on. I couldn&rsquo;t find much information on the subject, but after digging around, it turns out that it&rsquo;s pretty easy.</p>
 
 <p>Here are my (admittedly contrived) models. You can see that a User belongs to an Account and an Account belongs to a Group. For this example, let&rsquo;s say I want a filter in ActiveAdmin on the User resource that lists all the Groups.</p>

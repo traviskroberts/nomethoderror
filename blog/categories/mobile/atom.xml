@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: mobile | NoMethodError]]></title>
-  <link href="http://nomethoderror.com/nomethoderror/blog/categories/mobile/atom.xml" rel="self"/>
-  <link href="http://nomethoderror.com/nomethoderror/"/>
-  <updated>2015-04-09T14:18:49-05:00</updated>
-  <id>http://nomethoderror.com/nomethoderror/</id>
+  <link href="http://nomethoderror.com//blog/categories/mobile/atom.xml" rel="self"/>
+  <link href="http://nomethoderror.com//"/>
+  <updated>2015-04-09T14:19:37-05:00</updated>
+  <id>http://nomethoderror.com//</id>
   <author>
     <name><![CDATA[Travis Roberts]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Using PhoneGap FileTransfer to Download Multiple Files to the Device]]></title>
-    <link href="http://nomethoderror.com/nomethoderror/blog/2013/11/17/using-phonegap-filetransfer-to-download-multiple-files-to-the-device/"/>
+    <link href="http://nomethoderror.com//blog/2013/11/17/using-phonegap-filetransfer-to-download-multiple-files-to-the-device/"/>
     <updated>2013-11-17T18:46:00-06:00</updated>
-    <id>http://nomethoderror.com/nomethoderror/blog/2013/11/17/using-phonegap-filetransfer-to-download-multiple-files-to-the-device</id>
+    <id>http://nomethoderror.com//blog/2013/11/17/using-phonegap-filetransfer-to-download-multiple-files-to-the-device</id>
     <content type="html"><![CDATA[<p>I&rsquo;ve been working recently on a <a href="http://phonegap.com/">PhoneGap</a> app that is designed to operate offline, and receives incremental data updates from an API when the user has an Internet connection. These incremental updates also include new/updated product images. Since the app needs to operate offline, I have to download the files to the device when they are updated or added so they can be shown offline.</p>
 
 <p>PhoneGap has <a href="http://docs.phonegap.com/en/3.1.0/cordova_file_file.md.html">File and FileTransfer</a> plugins that allow you to access the device&rsquo;s file system and even upload/download files. The problem with these plugin are, almost all of the actions trigger callbacks, so it&rsquo;s hard to keep the thread of what is happening. The PhoneGap documentation for these plugins are slightly lacking, so it was difficult to figure out how to accomplish what I needed. Through a lot of Googling and trial &amp; error, I was finally able to get the following code working.</p>
