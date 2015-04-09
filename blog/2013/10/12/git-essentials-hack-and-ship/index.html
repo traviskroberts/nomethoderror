@@ -1,0 +1,346 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Git Essentials - Hack &amp; Ship - NoMethodError</title>
+  <meta name="author" content="Travis Roberts">
+
+  
+  <meta name="description" content="If you&rsquo;re like me, your normal git workflow looks something like this: Do some work in a topic branch and need to rebase master into the branch &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://nomethoderror.com/nomethoderror/blog/2013/10/12/git-essentials-hack-and-ship/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="NoMethodError" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=Arvo:400,400italic,700,700italic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=Merienda:700" rel="stylesheet" type="text/css">
+
+  
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-2032096-4', 'nomethoderror.com');
+    ga('send', 'pageview');
+
+    // OLD CODE
+    // var _gaq = _gaq || [];
+    // _gaq.push(['_setAccount', 'UA-2032096-4']);
+    // _gaq.push(['_trackPageview']);
+
+    // (function() {
+    //   var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    //   ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    //   var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    // })();
+  </script>
+
+
+</head>
+
+<body>
+  <div id="navigation">
+    <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:nomethoderror.com/nomethoderror" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  </div>
+  <header role="banner"><hgroup>
+  <h1><a href="/">NoMethodError</a></h1>
+  
+    <h2><span class="raise">raise</span> <span class="string">"a blog about rails, javascript, and other stuff"</span></h2>
+  
+</hgroup>
+
+</header>
+  <div id="body"  >
+    <div id="main">
+      <div id="content">
+        <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Git Essentials - Hack &amp; Ship</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-12T11:44:00-05:00" pubdate data-updated="true">Oct 12<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>If you&rsquo;re like me, your normal git workflow looks something like this:</p>
+
+<ol>
+<li>Do some work in a topic branch and need to rebase master into the branch.</li>
+<li><code>git checkout master</code></li>
+<li><code>git pull origin master</code> (or <code>fetch</code> and <code>merge</code>)</li>
+<li><code>git checkout topic-branch</code></li>
+<li><code>git rebase master</code></li>
+</ol>
+
+
+<p>Once you&rsquo;re done with your topic branch, it might look something like this:</p>
+
+<ol>
+<li><code>git checkout master</code></li>
+<li><code>git merge topic-branch</code></li>
+<li><code>git push origin master</code></li>
+</ol>
+
+
+<p>That&rsquo;s a lot of work, and as a developer we can definitely make that process easier. About 4 years ago, I came across a set of bash scripts that simplified this workflow greatly. The creator, <a href="http://reinh.com/">Rein Henrichs</a>, named them <a href="http://reinh.com/blog/2008/08/27/hack-and-and-ship.html">Hack &amp;&amp; Ship</a>.</p>
+
+<p>These tools worked great, but weren&rsquo;t flexible enough for me. They assumed that you would always be rebasing and pushing to the master branch. If this wasn&rsquo;t the case, you had to do everything by hand.</p>
+
+<p>Here are my updated versions of Hack &amp;&amp; Ship that allow you to rebase and push to any branch (such as <code>staging</code> or <code>qa</code>):</p>
+
+<h2>Hack</h2>
+
+<div><script src='https://gist.github.com/6952241.js?file=hack.sh'></script>
+<noscript><pre><code>#!/bin/sh
+
+CURRENT=`git branch | grep &#39;\*&#39; | awk &#39;{print $2}&#39;`
+TARGET=$1
+: ${TARGET:=&quot;master&quot;}
+
+echo &quot;\033[33m=&gt; git checkout ${TARGET}\033[0m&quot;
+git checkout ${TARGET}
+
+echo &quot;\033[33m=&gt; git pull origin ${TARGET}\033[0m&quot;
+git pull origin ${TARGET}
+
+echo &quot;\033[33m=&gt; git checkout ${CURRENT}\033[0m&quot;
+git checkout ${CURRENT}
+
+echo &quot;\033[33m=&gt; git rebase ${TARGET}\033[0m&quot;
+git rebase ${TARGET}</code></pre></noscript></div>
+
+
+<h2>Ship</h2>
+
+<div><script src='https://gist.github.com/6952241.js?file=ship.sh'></script>
+<noscript><pre><code>#!/bin/sh
+
+CURRENT=`git branch | grep &#39;\*&#39; | awk &#39;{print $2}&#39;`
+TARGET=$1
+: ${TARGET:=&quot;master&quot;}
+
+echo &quot;\033[33m=&gt; git checkout ${TARGET}\033[0m&quot;
+git checkout ${TARGET}
+
+echo &quot;\033[33m=&gt; git merge ${CURRENT}\033[0m&quot;
+git merge ${CURRENT}
+
+echo &quot;\033[33m=&gt; git push origin ${TARGET}\033[0m&quot;
+git push origin ${TARGET}
+
+echo &quot;\033[33m=&gt; git checkout ${CURRENT}\033[0m&quot;
+git checkout ${CURRENT}</code></pre></noscript></div>
+
+
+<p>To use them, create two files named <code>hack</code> and <code>ship</code> somewhere in your path (like <code>/usr/local/bin</code> maybe) and make them executable. Then, you can invoke them like so:</p>
+
+<p><code>hack</code> or <code>hack staging</code></p>
+
+<p><code>push</code> or <code>push qa</code></p>
+
+<p><code>hack &amp;&amp; ship</code></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Travis Roberts</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-12T11:44:00-05:00" pubdate data-updated="true">Oct 12<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/git/'>git</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://nomethoderror.com/nomethoderror/blog/2013/10/12/git-essentials-hack-and-ship/" data-via="travisroberts" data-counturl="http://nomethoderror.com/nomethoderror/blog/2013/10/12/git-essentials-hack-and-ship/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/10/03/converting-a-rails-database-from-mysql-to-postgresql/" title="Previous Post: Converting a Rails Database from mySQL to PostgreSQL">&laquo; Converting a Rails Database from mySQL to PostgreSQL</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/11/17/using-phonegap-filetransfer-to-download-multiple-files-to-the-device/" title="Next Post: Using PhoneGap FileTransfer to Download Multiple Files to the Device">Using PhoneGap FileTransfer to Download Multiple Files to the Device &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/03/10/activeadmin-redirect-to-index-on-create-update/">ActiveAdmin: Redirect to Index on Create/Update</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/26/simple-rails-form-honeypot/">Simple Rails Form Honeypot</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/23/activeadmin-custom-metasearch-filter/">ActiveAdmin: Custom MetaSearch Filter</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/05/activerecord-random-ordering-with-pagination/">ActiveRecord Random Ordering with Pagination</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/19/track-backbone-dot-js-page-views-with-google-analytics/">Track Backbone.js Page Views with Google Analytics</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/activeadmin'>activeadmin (2)</a></li><li><a href='/blog/categories/activerecord'>activerecord (1)</a></li><li><a href='/blog/categories/backbone'>backbone (1)</a></li><li><a href='/blog/categories/git'>git (1)</a></li><li><a href='/blog/categories/mobile'>mobile (1)</a></li><li><a href='/blog/categories/mysql'>mysql (2)</a></li><li><a href='/blog/categories/phonegap'>phonegap (1)</a></li><li><a href='/blog/categories/postgresql'>postgresql (2)</a></li><li><a href='/blog/categories/rails'>rails (5)</a></li></ul>
+</section>
+
+  
+</aside>
+
+
+      </div>
+    </div>
+    <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Travis Roberts -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>. Design by <a href="http://octopressthemes.com">Octopress Themes</a></span>
+</p>
+
+</footer>
+    
+
+<script type="text/javascript">
+      var disqus_shortname = 'travisr';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://nomethoderror.com/nomethoderror/blog/2013/10/12/git-essentials-hack-and-ship/';
+        var disqus_url = 'http://nomethoderror.com/nomethoderror/blog/2013/10/12/git-essentials-hack-and-ship/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+  </div>
+</body>
+</html>

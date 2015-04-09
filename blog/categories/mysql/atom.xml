@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: mysql | NoMethodError]]></title>
+  <link href="http://nomethoderror.com/nomethoderror/blog/categories/mysql/atom.xml" rel="self"/>
+  <link href="http://nomethoderror.com/nomethoderror/"/>
+  <updated>2015-04-09T14:18:49-05:00</updated>
+  <id>http://nomethoderror.com/nomethoderror/</id>
+  <author>
+    <name><![CDATA[Travis Roberts]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[ActiveRecord Random Ordering with Pagination]]></title>
+    <link href="http://nomethoderror.com/nomethoderror/blog/2014/02/05/activerecord-random-ordering-with-pagination/"/>
+    <updated>2014-02-05T21:18:00-06:00</updated>
+    <id>http://nomethoderror.com/nomethoderror/blog/2014/02/05/activerecord-random-ordering-with-pagination</id>
+    <content type="html"><![CDATA[<p>When I created <a href="http://nshvll.org/">nshvll.org</a>, I wanted the ability to show the user a randomly ordered list of members. I also wanted to paginate the results, and I didn&rsquo;t know if it was possible to have both. After a little research, I found that you can pass a seed to the mySQL <code>RAND()</code> function and have it return an identical list each time it&rsquo;s called.</p>
+
+<h2>mySQL</h2>
+
+<p>Since I want each person to get a uniquely randomized list of members, I set a cookie with a seed which is randomly generated (1-100).</p>
+
+<p>I set the seed in a <code>before_filter</code> in my <code>ApplicationController</code>.</p>
+
+<p><div><script src='https://gist.github.com/8838030.js?file=application_controller_mysql.rb'></script>
+<noscript><pre><code>class ApplicationController &lt; ActionController::Base
+  before_filter :set_rand_cookie
+
+  private
+  
+  def set_rand_cookie
+    return if cookies[:rand_seed].present?
+    cookies[:rand_seed] = {value: rand(100), expires: Time.now + 900}
+  end
+end</code></pre></noscript></div>
+</p>
+
+<p>Notice, I only set the cookie if it doesn&rsquo;t exist. I also set the expiration of the cookie to 15 minutes because I don&rsquo;t want the user to get the same list of members <em>all</em> the time.</p>
+
+<p>Now, in the <code>MembersController</code>, I can pass that seed to mySQL and get a repeatable sequence of random records.</p>
+
+<p><div><script src='https://gist.github.com/8838030.js?file=members_controller_mysql.rb'></script>
+<noscript><pre><code>class MembersController &lt; ApplicationController
+
+  def index
+    seed_val = Member.connection.quote(cookies[:rand_seed])
+    @members = Member.order(&quot;RAND(#{seed_val})&quot;).page(params[:page]).per(15)
+  end
+  
+end</code></pre></noscript></div>
+</p>
+
+<h2>PostgreSQL</h2>
+
+<p>A little while after I built the site, I decided to move it from a personal VPS to <a href="https://www.heroku.com/">Heroku</a>. To do that, I needed to convert the database to PostgreSQL (or pay for a mySQL option). After a little research, I found out that PostgreSQL is a bit trickier than mySQL when it comes to using a seed with the <code>random()</code> function. You have to run a separate select query to set the seed before the query that gets the list of records.</p>
+
+<p><div><script src='https://gist.github.com/8838030.js?file=members_controller_postgres.rb'></script>
+<noscript><pre><code>class MembersController &lt; ApplicationController
+
+  def index
+    seed_val = Member.connection.quote(cookies[:rand_seed])
+    Member.connection.execute(&quot;select setseed(#{seed_val})&quot;)
+    @members = Member.order(&#39;random()&#39;).page(params[:page]).per(15)
+  end
+
+end</code></pre></noscript></div>
+</p>
+
+<p>PostgreSQL&rsquo;s <code>setseed()</code> function requires a number between -1 and 1, so we need to switch to a random float instead of an integer in the <code>ApplicationController</code></p>
+
+<p><div><script src='https://gist.github.com/8838030.js?file=application_controller_postgres.rb'></script>
+<noscript><pre><code>class ApplicationController &lt; ActionController::Base
+  before_filter :set_rand_cookie
+
+  private
+  
+  def set_rand_cookie
+    return if cookies[:rand_seed].present?
+    cookies[:rand_seed] = {value: rand, expires: Time.now + 900}
+  end
+end</code></pre></noscript></div>
+</p>
+
+<p>There we go. A repeatable, randomized set of records in mySQL or PostgreSQL.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Converting a Rails Database from mySQL to PostgreSQL]]></title>
+    <link href="http://nomethoderror.com/nomethoderror/blog/2013/10/03/converting-a-rails-database-from-mysql-to-postgresql/"/>
+    <updated>2013-10-03T18:18:00-05:00</updated>
+    <id>http://nomethoderror.com/nomethoderror/blog/2013/10/03/converting-a-rails-database-from-mysql-to-postgresql</id>
+    <content type="html"><![CDATA[<p>The <a href="https://github.com/ricardochimal/taps">taps</a> gem allows you to transfer database structure and data easily between db types.</p>
+
+<h2>Add the necessary gems to your Gemfile</h2>
+
+<p><div><script src='https://gist.github.com/6818918.js?file=1_gemfile.rb'></script>
+<noscript><pre><code>gem &#39;taps&#39;
+gem &#39;sqlite3&#39; # dependency of taps</code></pre></noscript></div>
+</p>
+
+<p>Make sure you have the gems for both db types you&rsquo;ll be accessing.</p>
+
+<p><div><script src='https://gist.github.com/6818918.js?file=2_gemfile.rb'></script>
+<noscript><pre><code>gem &#39;mysql2&#39;
+gem &#39;pg&#39;</code></pre></noscript></div>
+</p>
+
+<h2>Start the taps server</h2>
+
+<p>This will connect to the database that you are copying structure/date <em>from</em>.</p>
+
+<p><div><script src='https://gist.github.com/6818918.js?file=3_taps.sh'></script>
+<noscript><pre><code>taps server mysql2://username:password@localhost/dbname authusername authpassword</code></pre></noscript></div>
+</p>
+
+<p><code>authusername</code> and <code>authpassword</code> can be whatever you want. This will be used to authenticate when pulling from this db server.</p>
+
+<h2>Pull the data into your new database</h2>
+
+<p>Make sure the new database has been created.</p>
+
+<p><div><script src='https://gist.github.com/6818918.js?file=4_taps.sh'></script>
+<noscript><pre><code>taps pull postgres://username:password@localhost/dbname http://authusername:authpassword@localhost:5000</code></pre></noscript></div>
+</p>
+
+<p>Done!</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: activeadmin | NoMethodError]]></title>
+  <link href="http://nomethoderror.com/nomethoderror/blog/categories/activeadmin/atom.xml" rel="self"/>
+  <link href="http://nomethoderror.com/nomethoderror/"/>
+  <updated>2015-04-09T14:18:49-05:00</updated>
+  <id>http://nomethoderror.com/nomethoderror/</id>
+  <author>
+    <name><![CDATA[Travis Roberts]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[ActiveAdmin: Redirect to Index on Create/Update]]></title>
+    <link href="http://nomethoderror.com/nomethoderror/blog/2014/03/10/activeadmin-redirect-to-index-on-create-update/"/>
+    <updated>2014-03-10T21:46:18-05:00</updated>
+    <id>http://nomethoderror.com/nomethoderror/blog/2014/03/10/activeadmin-redirect-to-index-on-create-update</id>
+    <content type="html"><![CDATA[<p>By default, <a href="http://activeadmin.info/">ActiveAdmin</a> will display the <code>:show</code> action on create or update of a resource. Personally, I&rsquo;d rather redirect to the <code>:index</code> action as long as the resource is valid.</p>
+
+<p>You can overwrite ActiveAdmin&rsquo;s default behavior using the <code>controller</code> block.</p>
+
+<p><div><script src='https://gist.github.com/9478684.js'></script>
+<noscript><pre><code>ActiveAdmin.register User do
+  
+  # ...truncated code...
+  
+  controller do
+    def create
+      super do |format|
+        redirect_to collection_url and return if resource.valid?
+      end
+    end
+
+    def update
+      super do |format|
+        redirect_to collection_url and return if resource.valid?
+      end
+    end
+  end
+
+end</code></pre></noscript></div>
+</p>
+
+<p>Notice, I&rsquo;m adding &ldquo;if resource.valid?&rdquo; to make sure we only redirect when there are no validation errors. If we didn&rsquo;t have that extra bit, the actions would <strong>always</strong> redirect to the <code>:index</code> action regardless.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ActiveAdmin: Custom MetaSearch Filter]]></title>
+    <link href="http://nomethoderror.com/nomethoderror/blog/2014/02/23/activeadmin-custom-metasearch-filter/"/>
+    <updated>2014-02-23T17:06:00-06:00</updated>
+    <id>http://nomethoderror.com/nomethoderror/blog/2014/02/23/activeadmin-custom-metasearch-filter</id>
+    <content type="html"><![CDATA[<p>Recently, I had the need to create a custom ActiveAdmin filter for a site I was working on. I couldn&rsquo;t find much information on the subject, but after digging around, it turns out that it&rsquo;s pretty easy.</p>
+
+<p>Here are my (admittedly contrived) models. You can see that a User belongs to an Account and an Account belongs to a Group. For this example, let&rsquo;s say I want a filter in ActiveAdmin on the User resource that lists all the Groups.</p>
+
+<p><div><script src='https://gist.github.com/fdae2afefe12dd888633.js?file=1_models.rb'></script>
+<noscript><pre><code>class Group &lt; ActiveRecord::Base
+  has_many :accounts
+end
+
+class Account &lt; ActiveRecord::Base
+  has_many :users
+  belongs_to :group
+end
+
+class User &lt; ActiveRecord::Base
+  belongs_to :account
+end</code></pre></noscript></div>
+</p>
+
+<p>Here&rsquo;s my simplified ActiveAdmin resource, with the added filter.</p>
+
+<p><div><script src='https://gist.github.com/fdae2afefe12dd888633.js?file=2_user_resource.rb'></script>
+<noscript><pre><code>ActiveAdmin.register User do
+  index do
+    column :id
+    column :name
+    column :email
+    default_actions
+  end
+
+  filter :id
+  filter :name
+  filter :email
+  filter :group, as: :select, collection: Group.order(:name)
+end</code></pre></noscript></div>
+</p>
+
+<p>To hook it up to the model, I just need to add a scope and a call to the built-in MetaSearch method <code>search_methods</code>.</p>
+
+<p><div><script src='https://gist.github.com/fdae2afefe12dd888633.js?file=3_user_model.rb'></script>
+<noscript><pre><code>class User &lt; ActiveRecord::Base
+  belongs_to :account
+
+  search_methods :group # tells meta_search to use this method as a filter
+
+  scope :group, -&gt;(group_id) { joins(:account =&gt; :group).where(&quot;groups.id = ?&quot;, group_id) }
+end</code></pre></noscript></div>
+</p>
+]]></content>
+  </entry>
+  
+</feed>
