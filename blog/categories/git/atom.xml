@@ -4,7 +4,7 @@
   <title><![CDATA[Category: git | NoMethodError]]></title>
   <link href="http://nomethoderror.com//blog/categories/git/atom.xml" rel="self"/>
   <link href="http://nomethoderror.com//"/>
-  <updated>2015-04-09T14:19:37-05:00</updated>
+  <updated>2015-05-21T22:01:03-05:00</updated>
   <id>http://nomethoderror.com//</id>
   <author>
     <name><![CDATA[Travis Roberts]]></name>
@@ -48,44 +48,46 @@
 
 <p><div><script src='https://gist.github.com/6952241.js?file=hack.sh'></script>
 <noscript><pre><code>#!/bin/sh
-
+# git name-rev is fail
 CURRENT=`git branch | grep &#39;\*&#39; | awk &#39;{print $2}&#39;`
 TARGET=$1
 : ${TARGET:=&quot;master&quot;}
 
-echo &quot;\033[33m=&gt; git checkout ${TARGET}\033[0m&quot;
+echo &quot;=&gt; git checkout ${TARGET}&quot;
 git checkout ${TARGET}
 
-echo &quot;\033[33m=&gt; git pull origin ${TARGET}\033[0m&quot;
+echo &quot;=&gt; git pull origin ${TARGET}&quot;
 git pull origin ${TARGET}
 
-echo &quot;\033[33m=&gt; git checkout ${CURRENT}\033[0m&quot;
+echo &quot;=&gt; git checkout ${CURRENT}&quot;
 git checkout ${CURRENT}
 
-echo &quot;\033[33m=&gt; git rebase ${TARGET}\033[0m&quot;
-git rebase ${TARGET}</code></pre></noscript></div>
+echo &quot;=&gt; git rebase ${TARGET}&quot;
+git rebase ${TARGET}
+</code></pre></noscript></div>
 </p>
 
 <h2>Ship</h2>
 
 <p><div><script src='https://gist.github.com/6952241.js?file=ship.sh'></script>
 <noscript><pre><code>#!/bin/sh
-
+# git name-rev is fail
 CURRENT=`git branch | grep &#39;\*&#39; | awk &#39;{print $2}&#39;`
 TARGET=$1
 : ${TARGET:=&quot;master&quot;}
 
-echo &quot;\033[33m=&gt; git checkout ${TARGET}\033[0m&quot;
+echo &quot;=&gt; git checkout ${TARGET}&quot;
 git checkout ${TARGET}
 
-echo &quot;\033[33m=&gt; git merge ${CURRENT}\033[0m&quot;
+echo &quot;=&gt; git merge ${CURRENT}&quot;
 git merge ${CURRENT}
 
-echo &quot;\033[33m=&gt; git push origin ${TARGET}\033[0m&quot;
+echo &quot;=&gt; git push origin ${TARGET}&quot;
 git push origin ${TARGET}
 
-echo &quot;\033[33m=&gt; git checkout ${CURRENT}\033[0m&quot;
-git checkout ${CURRENT}</code></pre></noscript></div>
+echo &quot;=&gt; git checkout ${CURRENT}&quot;
+git checkout ${CURRENT}
+</code></pre></noscript></div>
 </p>
 
 <p>To use them, create two files named <code>hack</code> and <code>ship</code> somewhere in your path (like <code>/usr/local/bin</code> maybe) and make them executable. Then, you can invoke them like so:</p>

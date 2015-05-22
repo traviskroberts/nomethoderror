@@ -4,7 +4,7 @@
   <title><![CDATA[Category: rails | NoMethodError]]></title>
   <link href="http://nomethoderror.com//blog/categories/rails/atom.xml" rel="self"/>
   <link href="http://nomethoderror.com//"/>
-  <updated>2015-04-09T14:19:37-05:00</updated>
+  <updated>2015-05-21T22:01:03-05:00</updated>
   <id>http://nomethoderror.com//</id>
   <author>
     <name><![CDATA[Travis Roberts]]></name>
@@ -81,7 +81,7 @@ end</code></pre></noscript></div>
 
     &lt;div class=&quot;form-group honeypot&quot;&gt;
       &lt;%= label_tag :content %&gt;
-      &lt;%= text_field_tag :content, nil, tabindex: &#39;-1&#39; %&gt;
+      &lt;%= text_field_tag :content %&gt;
       &lt;span class=&quot;help&quot;&gt;Do not fill in this field. It is an anti-spam measure.&lt;/span&gt;
     &lt;/div&gt;
   &lt;/fieldset&gt;
@@ -110,7 +110,7 @@ end</code></pre></noscript></div>
 <noscript><pre><code>class FormController &lt; ApplicationController
 
   def submit
-    SiteMailer.notify(params).deliver unless params[:content].present? # honeypot check
+    SiteMailer.contact(params).deliver unless params[:content].present? # honeypot check
     flash[:success] = &quot;Your message has been submitted. Thank you!&quot;
     redirect_to root_url
   end
@@ -169,7 +169,7 @@ end</code></pre></noscript></div>
 <noscript><pre><code>class User &lt; ActiveRecord::Base
   belongs_to :account
 
-  search_methods :group # tells meta_search to use this method as a filter
+  search_methods :address # tells meta_search to use this method as a filter
 
   scope :group, -&gt;(group_id) { joins(:account =&gt; :group).where(&quot;groups.id = ?&quot;, group_id) }
 end</code></pre></noscript></div>
@@ -211,8 +211,7 @@ end</code></pre></noscript></div>
 <noscript><pre><code>class MembersController &lt; ApplicationController
 
   def index
-    seed_val = Member.connection.quote(cookies[:rand_seed])
-    @members = Member.order(&quot;RAND(#{seed_val})&quot;).page(params[:page]).per(15)
+    @members = Member.order(&quot;RAND(#{cookies[:rand_seed]})&quot;).page(params[:page]).per(15)
   end
   
 end</code></pre></noscript></div>
@@ -226,8 +225,7 @@ end</code></pre></noscript></div>
 <noscript><pre><code>class MembersController &lt; ApplicationController
 
   def index
-    seed_val = Member.connection.quote(cookies[:rand_seed])
-    Member.connection.execute(&quot;select setseed(#{seed_val})&quot;)
+    Member.connection.execute(&quot;select setseed(#{cookies[:rand_seed]})&quot;)
     @members = Member.order(&#39;random()&#39;).page(params[:page]).per(15)
   end
 
