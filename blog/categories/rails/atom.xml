@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: rails | NoMethodError]]></title>
+  <link href="http://nomethoderror.com//blog/categories/rails/atom.xml" rel="self"/>
+  <link href="http://nomethoderror.com//"/>
+  <updated>2015-04-09T14:19:37-05:00</updated>
+  <id>http://nomethoderror.com//</id>
+  <author>
+    <name><![CDATA[Travis Roberts]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[ActiveAdmin: Redirect to Index on Create/Update]]></title>
+    <link href="http://nomethoderror.com//blog/2014/03/10/activeadmin-redirect-to-index-on-create-update/"/>
+    <updated>2014-03-10T21:46:18-05:00</updated>
+    <id>http://nomethoderror.com//blog/2014/03/10/activeadmin-redirect-to-index-on-create-update</id>
+    <content type="html"><![CDATA[<p>By default, <a href="http://activeadmin.info/">ActiveAdmin</a> will display the <code>:show</code> action on create or update of a resource. Personally, I&rsquo;d rather redirect to the <code>:index</code> action as long as the resource is valid.</p>
+
+<p>You can overwrite ActiveAdmin&rsquo;s default behavior using the <code>controller</code> block.</p>
+
+<p><div><script src='https://gist.github.com/9478684.js'></script>
+<noscript><pre><code>ActiveAdmin.register User do
+  
+  # ...truncated code...
+  
+  controller do
+    def create
+      super do |format|
+        redirect_to collection_url and return if resource.valid?
+      end
+    end
+
+    def update
+      super do |format|
+        redirect_to collection_url and return if resource.valid?
+      end
+    end
+  end
+
+end</code></pre></noscript></div>
+</p>
+
+<p>Notice, I&rsquo;m adding &ldquo;if resource.valid?&rdquo; to make sure we only redirect when there are no validation errors. If we didn&rsquo;t have that extra bit, the actions would <strong>always</strong> redirect to the <code>:index</code> action regardless.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Simple Rails Form Honeypot]]></title>
+    <link href="http://nomethoderror.com//blog/2014/02/26/simple-rails-form-honeypot/"/>
+    <updated>2014-02-26T20:48:48-06:00</updated>
+    <id>http://nomethoderror.com//blog/2014/02/26/simple-rails-form-honeypot</id>
+    <content type="html"><![CDATA[<p>If you have a form on your Rails site, chances are you get a fair amount of spam submissions from automated bots. One solution for preventing spam is by using a captcha field. They usually work very well to prevent spam, but they add a burden to human users. Another, less intrusive solution is to use a honeypot. A honeypot is a field that only bots can see, so you can know a form submission is spam if that field has a value.</p>
+
+<p>There are gems available that will add a honeypot for you, but if you prefer to implement it yourself, it&rsquo;s very straightforward.</p>
+
+<p>In your form, just add an extra field that you&rsquo;ll use to detect unauthorized submissions. Make sure to name it something normal so spam bots will populate it. I prefer to use the name &ldquo;content&rdquo;. Notice that the field has its tabindex attribute set to -1. This will prevent the field from being selected if a user tabs through the field. I&rsquo;ve also added some inline hint text in case a user with a screen reader fills out the form.</p>
+
+<p><div><script src='https://gist.github.com/9201887.js?file=1_form.erb'></script>
+<noscript><pre><code>&lt;%= form_tag form_submit_path do %&gt;
+  &lt;fieldset&gt;
+    &lt;legend&gt;Contact Info&lt;/legend&gt;
+
+    &lt;div class=&quot;form-group&quot;&gt;
+      &lt;%= label_tag :name %&gt;
+      &lt;%= text_field_tag :name %&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;form-group&quot;&gt;
+      &lt;%= label_tag :email %&gt;
+      &lt;%= text_field_tag :email %&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;form-group&quot;&gt;
+      &lt;%= label_tag :phone %&gt;
+      &lt;%= text_field_tag :phone %&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;form-group honeypot&quot;&gt;
+      &lt;%= label_tag :content %&gt;
+      &lt;%= text_field_tag :content, nil, tabindex: &#39;-1&#39; %&gt;
+      &lt;span class=&quot;help&quot;&gt;Do not fill in this field. It is an anti-spam measure.&lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/fieldset&gt;
+
+  &lt;button type=&quot;submit&quot;&gt;Submit&lt;/button&gt;
+&lt;%- end -%&gt;</code></pre></noscript></div>
+</p>
+
+<p>In your stylesheet, just add some styles to make sure that a human won&rsquo;t see the field on a desktop or mobile device.</p>
+
+<p><div><script src='https://gist.github.com/9201887.js?file=2_styles.scss'></script>
+<noscript><pre><code>.form-group {
+  margin-bottom: 1em;
+  width: 100%;
+
+  &amp;.honeypot {
+    position: absolute;
+    left: -9999px;
+  }
+}</code></pre></noscript></div>
+</p>
+
+<p>The final step is to add a check in your controller to only process the form if the value of the field is blank. For me, I&rsquo;m only sending a notification email if the form submission is certified anti-spam.</p>
+
+<p><div><script src='https://gist.github.com/9201887.js?file=3_controller.rb'></script>
+<noscript><pre><code>class FormController &lt; ApplicationController
+
+  def submit
+    SiteMailer.notify(params).deliver unless params[:content].present? # honeypot check
+    flash[:success] = &quot;Your message has been submitted. Thank you!&quot;
+    redirect_to root_url
+  end
+
+end
+</code></pre></noscript></div>
+</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ActiveAdmin: Custom MetaSearch Filter]]></title>
+    <link href="http://nomethoderror.com//blog/2014/02/23/activeadmin-custom-metasearch-filter/"/>
+    <updated>2014-02-23T17:06:00-06:00</updated>
+    <id>http://nomethoderror.com//blog/2014/02/23/activeadmin-custom-metasearch-filter</id>
+    <content type="html"><![CDATA[<p>Recently, I had the need to create a custom ActiveAdmin filter for a site I was working on. I couldn&rsquo;t find much information on the subject, but after digging around, it turns out that it&rsquo;s pretty easy.</p>
+
+<p>Here are my (admittedly contrived) models. You can see that a User belongs to an Account and an Account belongs to a Group. For this example, let&rsquo;s say I want a filter in ActiveAdmin on the User resource that lists all the Groups.</p>
+
+<p><div><script src='https://gist.github.com/fdae2afefe12dd888633.js?file=1_models.rb'></script>
+<noscript><pre><code>class Group &lt; ActiveRecord::Base
+  has_many :accounts
+end
+
+class Account &lt; ActiveRecord::Base
+  has_many :users
+  belongs_to :group
+end
+
+class User &lt; ActiveRecord::Base
+  belongs_to :account
+end</code></pre></noscript></div>
+</p>
+
+<p>Here&rsquo;s my simplified ActiveAdmin resource, with the added filter.</p>
+
+<p><div><script src='https://gist.github.com/fdae2afefe12dd888633.js?file=2_user_resource.rb'></script>
+<noscript><pre><code>ActiveAdmin.register User do
+  index do
+    column :id
+    column :name
+    column :email
+    default_actions
+  end
+
+  filter :id
+  filter :name
+  filter :email
+  filter :group, as: :select, collection: Group.order(:name)
+end</code></pre></noscript></div>
+</p>
+
+<p>To hook it up to the model, I just need to add a scope and a call to the built-in MetaSearch method <code>search_methods</code>.</p>
+
+<p><div><script src='https://gist.github.com/fdae2afefe12dd888633.js?file=3_user_model.rb'></script>
+<noscript><pre><code>class User &lt; ActiveRecord::Base
+  belongs_to :account
+
+  search_methods :group # tells meta_search to use this method as a filter
+
+  scope :group, -&gt;(group_id) { joins(:account =&gt; :group).where(&quot;groups.id = ?&quot;, group_id) }
+end</code></pre></noscript></div>
+</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ActiveRecord Random Ordering with Pagination]]></title>
+    <link href="http://nomethoderror.com//blog/2014/02/05/activerecord-random-ordering-with-pagination/"/>
+    <updated>2014-02-05T21:18:00-06:00</updated>
+    <id>http://nomethoderror.com//blog/2014/02/05/activerecord-random-ordering-with-pagination</id>
+    <content type="html"><![CDATA[<p>When I created <a href="http://nshvll.org/">nshvll.org</a>, I wanted the ability to show the user a randomly ordered list of members. I also wanted to paginate the results, and I didn&rsquo;t know if it was possible to have both. After a little research, I found that you can pass a seed to the mySQL <code>RAND()</code> function and have it return an identical list each time it&rsquo;s called.</p>
+
+<h2>mySQL</h2>
+
+<p>Since I want each person to get a uniquely randomized list of members, I set a cookie with a seed which is randomly generated (1-100).</p>
+
+<p>I set the seed in a <code>before_filter</code> in my <code>ApplicationController</code>.</p>
+
+<p><div><script src='https://gist.github.com/8838030.js?file=application_controller_mysql.rb'></script>
+<noscript><pre><code>class ApplicationController &lt; ActionController::Base
+  before_filter :set_rand_cookie
+
+  private
+  
+  def set_rand_cookie
+    return if cookies[:rand_seed].present?
+    cookies[:rand_seed] = {value: rand(100), expires: Time.now + 900}
+  end
+end</code></pre></noscript></div>
+</p>
+
+<p>Notice, I only set the cookie if it doesn&rsquo;t exist. I also set the expiration of the cookie to 15 minutes because I don&rsquo;t want the user to get the same list of members <em>all</em> the time.</p>
+
+<p>Now, in the <code>MembersController</code>, I can pass that seed to mySQL and get a repeatable sequence of random records.</p>
+
+<p><div><script src='https://gist.github.com/8838030.js?file=members_controller_mysql.rb'></script>
+<noscript><pre><code>class MembersController &lt; ApplicationController
+
+  def index
+    seed_val = Member.connection.quote(cookies[:rand_seed])
+    @members = Member.order(&quot;RAND(#{seed_val})&quot;).page(params[:page]).per(15)
+  end
+  
+end</code></pre></noscript></div>
+</p>
+
+<h2>PostgreSQL</h2>
+
+<p>A little while after I built the site, I decided to move it from a personal VPS to <a href="https://www.heroku.com/">Heroku</a>. To do that, I needed to convert the database to PostgreSQL (or pay for a mySQL option). After a little research, I found out that PostgreSQL is a bit trickier than mySQL when it comes to using a seed with the <code>random()</code> function. You have to run a separate select query to set the seed before the query that gets the list of records.</p>
+
+<p><div><script src='https://gist.github.com/8838030.js?file=members_controller_postgres.rb'></script>
+<noscript><pre><code>class MembersController &lt; ApplicationController
+
+  def index
+    seed_val = Member.connection.quote(cookies[:rand_seed])
+    Member.connection.execute(&quot;select setseed(#{seed_val})&quot;)
+    @members = Member.order(&#39;random()&#39;).page(params[:page]).per(15)
+  end
+
+end</code></pre></noscript></div>
+</p>
+
+<p>PostgreSQL&rsquo;s <code>setseed()</code> function requires a number between -1 and 1, so we need to switch to a random float instead of an integer in the <code>ApplicationController</code></p>
+
+<p><div><script src='https://gist.github.com/8838030.js?file=application_controller_postgres.rb'></script>
+<noscript><pre><code>class ApplicationController &lt; ActionController::Base
+  before_filter :set_rand_cookie
+
+  private
+  
+  def set_rand_cookie
+    return if cookies[:rand_seed].present?
+    cookies[:rand_seed] = {value: rand, expires: Time.now + 900}
+  end
+end</code></pre></noscript></div>
+</p>
+
+<p>There we go. A repeatable, randomized set of records in mySQL or PostgreSQL.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Converting a Rails Database from mySQL to PostgreSQL]]></title>
+    <link href="http://nomethoderror.com//blog/2013/10/03/converting-a-rails-database-from-mysql-to-postgresql/"/>
+    <updated>2013-10-03T18:18:00-05:00</updated>
+    <id>http://nomethoderror.com//blog/2013/10/03/converting-a-rails-database-from-mysql-to-postgresql</id>
+    <content type="html"><![CDATA[<p>The <a href="https://github.com/ricardochimal/taps">taps</a> gem allows you to transfer database structure and data easily between db types.</p>
+
+<h2>Add the necessary gems to your Gemfile</h2>
+
+<p><div><script src='https://gist.github.com/6818918.js?file=1_gemfile.rb'></script>
+<noscript><pre><code>gem &#39;taps&#39;
+gem &#39;sqlite3&#39; # dependency of taps</code></pre></noscript></div>
+</p>
+
+<p>Make sure you have the gems for both db types you&rsquo;ll be accessing.</p>
+
+<p><div><script src='https://gist.github.com/6818918.js?file=2_gemfile.rb'></script>
+<noscript><pre><code>gem &#39;mysql2&#39;
+gem &#39;pg&#39;</code></pre></noscript></div>
+</p>
+
+<h2>Start the taps server</h2>
+
+<p>This will connect to the database that you are copying structure/date <em>from</em>.</p>
+
+<p><div><script src='https://gist.github.com/6818918.js?file=3_taps.sh'></script>
+<noscript><pre><code>taps server mysql2://username:password@localhost/dbname authusername authpassword</code></pre></noscript></div>
+</p>
+
+<p><code>authusername</code> and <code>authpassword</code> can be whatever you want. This will be used to authenticate when pulling from this db server.</p>
+
+<h2>Pull the data into your new database</h2>
+
+<p>Make sure the new database has been created.</p>
+
+<p><div><script src='https://gist.github.com/6818918.js?file=4_taps.sh'></script>
+<noscript><pre><code>taps pull postgres://username:password@localhost/dbname http://authusername:authpassword@localhost:5000</code></pre></noscript></div>
+</p>
+
+<p>Done!</p>
+]]></content>
+  </entry>
+  
+</feed>

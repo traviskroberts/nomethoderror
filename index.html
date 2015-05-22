@@ -1,0 +1,949 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>NoMethodError</title>
+  <meta name="author" content="Travis Roberts">
+
+  
+  <meta name="description" content="By default, ActiveAdmin will display the :show action on create or update of a resource. Personally, I&rsquo;d rather redirect to the :index action &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://nomethoderror.com//">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="NoMethodError" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=Arvo:400,400italic,700,700italic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=Merienda:700" rel="stylesheet" type="text/css">
+
+  
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-2032096-4', 'nomethoderror.com');
+    ga('send', 'pageview');
+
+    // OLD CODE
+    // var _gaq = _gaq || [];
+    // _gaq.push(['_setAccount', 'UA-2032096-4']);
+    // _gaq.push(['_trackPageview']);
+
+    // (function() {
+    //   var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    //   ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    //   var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    // })();
+  </script>
+
+
+</head>
+
+<body>
+  <div id="navigation">
+    <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:nomethoderror.com/" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  </div>
+  <header role="banner"><hgroup>
+  <h1><a href="/">NoMethodError</a></h1>
+  
+    <h2><span class="raise">raise</span> <span class="string">"a blog about rails, javascript, and other stuff"</span></h2>
+  
+</hgroup>
+
+</header>
+  <div id="body"  >
+    <div id="main">
+      <div id="content">
+        <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/03/10/activeadmin-redirect-to-index-on-create-update/">ActiveAdmin: Redirect to Index on Create/Update</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-10T21:46:18-05:00" pubdate data-updated="true">Mar 10<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>By default, <a href="http://activeadmin.info/">ActiveAdmin</a> will display the <code>:show</code> action on create or update of a resource. Personally, I&rsquo;d rather redirect to the <code>:index</code> action as long as the resource is valid.</p>
+
+<p>You can overwrite ActiveAdmin&rsquo;s default behavior using the <code>controller</code> block.</p>
+
+<div><script src='https://gist.github.com/9478684.js'></script>
+<noscript><pre><code>ActiveAdmin.register User do
+  
+  # ...truncated code...
+  
+  controller do
+    def create
+      super do |format|
+        redirect_to collection_url and return if resource.valid?
+      end
+    end
+
+    def update
+      super do |format|
+        redirect_to collection_url and return if resource.valid?
+      end
+    end
+  end
+
+end</code></pre></noscript></div>
+
+
+<p>Notice, I&rsquo;m adding &ldquo;if resource.valid?&rdquo; to make sure we only redirect when there are no validation errors. If we didn&rsquo;t have that extra bit, the actions would <strong>always</strong> redirect to the <code>:index</code> action regardless.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/02/26/simple-rails-form-honeypot/">Simple Rails Form Honeypot</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-26T20:48:48-06:00" pubdate data-updated="true">Feb 26<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>If you have a form on your Rails site, chances are you get a fair amount of spam submissions from automated bots. One solution for preventing spam is by using a captcha field. They usually work very well to prevent spam, but they add a burden to human users. Another, less intrusive solution is to use a honeypot. A honeypot is a field that only bots can see, so you can know a form submission is spam if that field has a value.</p>
+
+<p>There are gems available that will add a honeypot for you, but if you prefer to implement it yourself, it&rsquo;s very straightforward.</p>
+
+<p>In your form, just add an extra field that you&rsquo;ll use to detect unauthorized submissions. Make sure to name it something normal so spam bots will populate it. I prefer to use the name &ldquo;content&rdquo;. Notice that the field has its tabindex attribute set to -1. This will prevent the field from being selected if a user tabs through the field. I&rsquo;ve also added some inline hint text in case a user with a screen reader fills out the form.</p>
+
+<div><script src='https://gist.github.com/9201887.js?file=1_form.erb'></script>
+<noscript><pre><code>&lt;%= form_tag form_submit_path do %&gt;
+  &lt;fieldset&gt;
+    &lt;legend&gt;Contact Info&lt;/legend&gt;
+
+    &lt;div class=&quot;form-group&quot;&gt;
+      &lt;%= label_tag :name %&gt;
+      &lt;%= text_field_tag :name %&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;form-group&quot;&gt;
+      &lt;%= label_tag :email %&gt;
+      &lt;%= text_field_tag :email %&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;form-group&quot;&gt;
+      &lt;%= label_tag :phone %&gt;
+      &lt;%= text_field_tag :phone %&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;form-group honeypot&quot;&gt;
+      &lt;%= label_tag :content %&gt;
+      &lt;%= text_field_tag :content, nil, tabindex: &#39;-1&#39; %&gt;
+      &lt;span class=&quot;help&quot;&gt;Do not fill in this field. It is an anti-spam measure.&lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/fieldset&gt;
+
+  &lt;button type=&quot;submit&quot;&gt;Submit&lt;/button&gt;
+&lt;%- end -%&gt;</code></pre></noscript></div>
+
+
+<p>In your stylesheet, just add some styles to make sure that a human won&rsquo;t see the field on a desktop or mobile device.</p>
+
+<div><script src='https://gist.github.com/9201887.js?file=2_styles.scss'></script>
+<noscript><pre><code>.form-group {
+  margin-bottom: 1em;
+  width: 100%;
+
+  &amp;.honeypot {
+    position: absolute;
+    left: -9999px;
+  }
+}</code></pre></noscript></div>
+
+
+<p>The final step is to add a check in your controller to only process the form if the value of the field is blank. For me, I&rsquo;m only sending a notification email if the form submission is certified anti-spam.</p>
+
+<div><script src='https://gist.github.com/9201887.js?file=3_controller.rb'></script>
+<noscript><pre><code>class FormController &lt; ApplicationController
+
+  def submit
+    SiteMailer.notify(params).deliver unless params[:content].present? # honeypot check
+    flash[:success] = &quot;Your message has been submitted. Thank you!&quot;
+    redirect_to root_url
+  end
+
+end
+</code></pre></noscript></div>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/02/23/activeadmin-custom-metasearch-filter/">ActiveAdmin: Custom MetaSearch Filter</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-23T17:06:00-06:00" pubdate data-updated="true">Feb 23<span>rd</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Recently, I had the need to create a custom ActiveAdmin filter for a site I was working on. I couldn&rsquo;t find much information on the subject, but after digging around, it turns out that it&rsquo;s pretty easy.</p>
+
+<p>Here are my (admittedly contrived) models. You can see that a User belongs to an Account and an Account belongs to a Group. For this example, let&rsquo;s say I want a filter in ActiveAdmin on the User resource that lists all the Groups.</p>
+
+<div><script src='https://gist.github.com/fdae2afefe12dd888633.js?file=1_models.rb'></script>
+<noscript><pre><code>class Group &lt; ActiveRecord::Base
+  has_many :accounts
+end
+
+class Account &lt; ActiveRecord::Base
+  has_many :users
+  belongs_to :group
+end
+
+class User &lt; ActiveRecord::Base
+  belongs_to :account
+end</code></pre></noscript></div>
+
+
+<p>Here&rsquo;s my simplified ActiveAdmin resource, with the added filter.</p>
+
+<div><script src='https://gist.github.com/fdae2afefe12dd888633.js?file=2_user_resource.rb'></script>
+<noscript><pre><code>ActiveAdmin.register User do
+  index do
+    column :id
+    column :name
+    column :email
+    default_actions
+  end
+
+  filter :id
+  filter :name
+  filter :email
+  filter :group, as: :select, collection: Group.order(:name)
+end</code></pre></noscript></div>
+
+
+<p>To hook it up to the model, I just need to add a scope and a call to the built-in MetaSearch method <code>search_methods</code>.</p>
+
+<div><script src='https://gist.github.com/fdae2afefe12dd888633.js?file=3_user_model.rb'></script>
+<noscript><pre><code>class User &lt; ActiveRecord::Base
+  belongs_to :account
+
+  search_methods :group # tells meta_search to use this method as a filter
+
+  scope :group, -&gt;(group_id) { joins(:account =&gt; :group).where(&quot;groups.id = ?&quot;, group_id) }
+end</code></pre></noscript></div>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/02/05/activerecord-random-ordering-with-pagination/">ActiveRecord Random Ordering With Pagination</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-05T21:18:00-06:00" pubdate data-updated="true">Feb 5<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>When I created <a href="http://nshvll.org/">nshvll.org</a>, I wanted the ability to show the user a randomly ordered list of members. I also wanted to paginate the results, and I didn&rsquo;t know if it was possible to have both. After a little research, I found that you can pass a seed to the mySQL <code>RAND()</code> function and have it return an identical list each time it&rsquo;s called.</p>
+
+<h2>mySQL</h2>
+
+<p>Since I want each person to get a uniquely randomized list of members, I set a cookie with a seed which is randomly generated (1-100).</p>
+
+<p>I set the seed in a <code>before_filter</code> in my <code>ApplicationController</code>.</p>
+
+<div><script src='https://gist.github.com/8838030.js?file=application_controller_mysql.rb'></script>
+<noscript><pre><code>class ApplicationController &lt; ActionController::Base
+  before_filter :set_rand_cookie
+
+  private
+  
+  def set_rand_cookie
+    return if cookies[:rand_seed].present?
+    cookies[:rand_seed] = {value: rand(100), expires: Time.now + 900}
+  end
+end</code></pre></noscript></div>
+
+
+<p>Notice, I only set the cookie if it doesn&rsquo;t exist. I also set the expiration of the cookie to 15 minutes because I don&rsquo;t want the user to get the same list of members <em>all</em> the time.</p>
+
+<p>Now, in the <code>MembersController</code>, I can pass that seed to mySQL and get a repeatable sequence of random records.</p>
+
+<div><script src='https://gist.github.com/8838030.js?file=members_controller_mysql.rb'></script>
+<noscript><pre><code>class MembersController &lt; ApplicationController
+
+  def index
+    seed_val = Member.connection.quote(cookies[:rand_seed])
+    @members = Member.order(&quot;RAND(#{seed_val})&quot;).page(params[:page]).per(15)
+  end
+  
+end</code></pre></noscript></div>
+
+
+<h2>PostgreSQL</h2>
+
+<p>A little while after I built the site, I decided to move it from a personal VPS to <a href="https://www.heroku.com/">Heroku</a>. To do that, I needed to convert the database to PostgreSQL (or pay for a mySQL option). After a little research, I found out that PostgreSQL is a bit trickier than mySQL when it comes to using a seed with the <code>random()</code> function. You have to run a separate select query to set the seed before the query that gets the list of records.</p>
+
+<div><script src='https://gist.github.com/8838030.js?file=members_controller_postgres.rb'></script>
+<noscript><pre><code>class MembersController &lt; ApplicationController
+
+  def index
+    seed_val = Member.connection.quote(cookies[:rand_seed])
+    Member.connection.execute(&quot;select setseed(#{seed_val})&quot;)
+    @members = Member.order(&#39;random()&#39;).page(params[:page]).per(15)
+  end
+
+end</code></pre></noscript></div>
+
+
+<p>PostgreSQL&rsquo;s <code>setseed()</code> function requires a number between -1 and 1, so we need to switch to a random float instead of an integer in the <code>ApplicationController</code></p>
+
+<div><script src='https://gist.github.com/8838030.js?file=application_controller_postgres.rb'></script>
+<noscript><pre><code>class ApplicationController &lt; ActionController::Base
+  before_filter :set_rand_cookie
+
+  private
+  
+  def set_rand_cookie
+    return if cookies[:rand_seed].present?
+    cookies[:rand_seed] = {value: rand, expires: Time.now + 900}
+  end
+end</code></pre></noscript></div>
+
+
+<p>There we go. A repeatable, randomized set of records in mySQL or PostgreSQL.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/11/19/track-backbone-dot-js-page-views-with-google-analytics/">Track Backbone.js Page Views With Google Analytics</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-19T19:42:00-06:00" pubdate data-updated="true">Nov 19<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Google Analytics tracks page views based on evaluating the tracking code on page load. Backbone.js makes this difficult because the page never reloads. Fortunately, it&rsquo;s super easy to add a function to the Backbone router to manually track each route.</p>
+
+<h2>Newer Analytics Code</h2>
+
+<p>If your tracking code looks like below, then you have the newer Analytics tracking code that uses the <code>ga</code> function instead of the <code>_gaq</code> array.</p>
+
+<div><script src='https://gist.github.com/9d05cb3d9c6d90408325.js?file=analytics_new.js'></script>
+<noscript><pre><code>(function(i,s,o,g,r,a,m){i[&#39;GoogleAnalyticsObject&#39;]=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,&#39;script&#39;,&#39;//www.google-analytics.com/analytics.js&#39;,&#39;ga&#39;);
+
+ga(&#39;create&#39;, &#39;UA-0000000-1&#39;, &#39;mysite.com&#39;);
+ga(&#39;send&#39;, &#39;pageview&#39;);</code></pre></noscript></div>
+
+
+<p>Add the following code to your router:</p>
+
+<div><script src='https://gist.github.com/9d05cb3d9c6d90408325.js?file=router_new.js'></script>
+<noscript><pre><code>initialize: function() {
+  this.bind(&#39;route&#39;, this._pageView);
+},
+
+_pageView: function() {
+  var path = Backbone.history.getFragment();
+  ga(&#39;send&#39;, &#39;pageview&#39;, {page: &quot;/&quot; + path});
+}</code></pre></noscript></div>
+
+
+<h2>Old Analytics Code</h2>
+
+<p>If your tracking code looks like this:</p>
+
+<div><script src='https://gist.github.com/9d05cb3d9c6d90408325.js?file=analytics_old.js'></script>
+<noscript><pre><code>var _gaq = _gaq || [];
+_gaq.push([&#39;_setAccount&#39;, &#39;UA-0000000-1&#39;]);
+_gaq.push([&#39;_trackPageview&#39;]);
+
+(function() {
+  var ga = document.createElement(&#39;script&#39;);
+      ga.type = &#39;text/javascript&#39;;
+      ga.async = true;
+      ga.src = (&#39;https:&#39; == document.location.protocol ? &#39;https://ssl&#39; : &#39;http://www&#39;) + &#39;.google-analytics.com/ga.js&#39;;
+  var s = document.getElementsByTagName(&#39;script&#39;)[0];
+      s.parentNode.insertBefore(ga, s);
+})();</code></pre></noscript></div>
+
+
+<p>Add the following code to your router:</p>
+
+<div><script src='https://gist.github.com/9d05cb3d9c6d90408325.js?file=router_old.js'></script>
+<noscript><pre><code>initialize: function() {
+  this.bind(&#39;route&#39;, this._pageView);
+},
+
+_pageView: function() {
+  var path = Backbone.history.getFragment();
+  _gaq.push([&#39;_trackPageview&#39;, &quot;/&quot; + path])
+}</code></pre></noscript></div>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/11/17/using-phonegap-filetransfer-to-download-multiple-files-to-the-device/">Using PhoneGap FileTransfer to Download Multiple Files to the Device</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-17T18:46:00-06:00" pubdate data-updated="true">Nov 17<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&rsquo;ve been working recently on a <a href="http://phonegap.com/">PhoneGap</a> app that is designed to operate offline, and receives incremental data updates from an API when the user has an Internet connection. These incremental updates also include new/updated product images. Since the app needs to operate offline, I have to download the files to the device when they are updated or added so they can be shown offline.</p>
+
+<p>PhoneGap has <a href="http://docs.phonegap.com/en/3.1.0/cordova_file_file.md.html">File and FileTransfer</a> plugins that allow you to access the device&rsquo;s file system and even upload/download files. The problem with these plugin are, almost all of the actions trigger callbacks, so it&rsquo;s hard to keep the thread of what is happening. The PhoneGap documentation for these plugins are slightly lacking, so it was difficult to figure out how to accomplish what I needed. Through a lot of Googling and trial &amp; error, I was finally able to get the following code working.</p>
+
+<div><script src='https://gist.github.com/9c8c9f1cc8d8d002dd5e.js?file=image_download.js'></script>
+<noscript><pre><code>imageDownloader = {
+  updateImages: function() {
+    this.remoteImages = [];
+    // ...code to get all of the images we need to download...
+    // in my app, it&#39;s a `SELECT DISTINCT(image) FROM products;` query
+    // example: [http://www.example.com/image1.jpg, http://www.example.com/image2.jpg, http://www.example.com/image3.jpg]
+    this.downloadImages();
+  },
+
+  downloadImages: function() {
+    var _this = this; // for use in the callbacks
+
+    // stop if we&#39;ve processed all of the images
+    if (this.remoteImages.length === 0) {
+      return;
+    }
+
+    // get the next image from the array
+    var image = this.remoteImages.pop();
+    var imageName = image.split(&#39;/&#39;).pop(); // just the image name (eg image1.jpg)
+
+    // access the filesystem
+    // &quot;LocalFileSystem.PERSISTENT&quot; means it is permanent and not temporary
+    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+      // the &quot;create: true&quot; option will create the file if it doesn&#39;t exist
+      // the &quot;exclusive: true&quot; option will skip the file if it already exists instead of re-downloading it
+      fileSystem.root.getFile(imageName, {create: true, exclusive: true}, function(fileEntry) {
+        // get the full path to the newly created file on the device
+        var localPath = fileEntry.fullPath;
+
+        // massage the path for android devices (not tested)
+        if (device.platform === &quot;Android&quot; &amp;&amp; localPath.indexOf(&quot;file://&quot;) === 0) {
+          localPath = localPath.substring(7);
+        }
+
+        // download the remote file and save it
+        var remoteFile = encodeURI(image.ProductImage);
+        var fileTransfer = new FileTransfer();
+        fileTransfer.download(remoteFile, localPath, function(newFileEntry) {
+          // successful download, continue to the next image
+          _this.downloadImages();
+        },
+        function(error) { // error callback for #download
+          console.log(&#39;Error with #download method.&#39;, error);
+          _this.downloadImages(); // continue working
+        });
+      },
+      function(error) { // error callback for #getFile
+        console.log(&#39;Error with #getFile method.&#39;, error);
+        _this.downloadImages(); // continue working
+      });
+    },
+    function(error) { // error callback for #requestFileSystem
+      console.log(&#39;Error with #requestFileSystem method.&#39;, error);
+    });
+  }
+};</code></pre></noscript></div>
+
+
+<p>Ok, we have the files downloaded, but how to we show them in our app. As far as I could find, you can&rsquo;t refence images on the device&rsquo;s filesystem form the PhoneGap app.</p>
+
+<p>Luckily, the PhoneGap File plugin has a way to read files from the filesystem. It includes a method to read the file as a data url which converts it to a base64-encoded string.</p>
+
+<p>My app was written using Backbone with Handlebars templates. So, to display the image, I wrote a Handlebars helper to get the image from the file system and return it as a base64-encoded string. You&rsquo;ll notice that the helper actually gets an element via jQuery and sets it <code>src</code> attribute. I had to do it this way since all of the File plugin methods are asynchronous and handled with callback.</p>
+
+<div><script src='https://gist.github.com/9c8c9f1cc8d8d002dd5e.js?file=handlebars.js'></script>
+<noscript><pre><code>// product is a json object
+// ex: {id: 5, image: &#39;image1.jpg&#39;}
+Handlebars.registerHelper(&#39;base64ProductImage&#39;, function(product, options) {
+  var productID = product.id;
+  var imageName = product.image.split(&#39;/&#39;).pop();
+  window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+    fileSystem.root.getFile(imageName, {create: false}, function(fileEntry) {
+      var reader = new FileReader();
+      reader.onloadend = function(event) { // callback for when file is read
+        $(&quot;#base64-image-#{productID}&quot;).attr(&#39;src&#39;, event.target.result);
+      };
+      fileEntry.file(function(file) {
+        reader.readAsDataURL(file);
+      }, null);
+    }, null);
+  }, null);
+
+  return &#39;&#39;;
+});</code></pre></noscript></div>
+
+
+<p>The helper can be called like so:</p>
+
+<div><script src='https://gist.github.com/9c8c9f1cc8d8d002dd5e.js?file=template.hbs'></script>
+<noscript><pre><code>&lt;img src=&quot;{{base64ProductImage product}}&quot; id=&quot;base64-image-{{product.id}}&quot; /&gt;</code></pre></noscript></div>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/10/12/git-essentials-hack-and-ship/">Git Essentials - Hack &amp; Ship</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-12T11:44:00-05:00" pubdate data-updated="true">Oct 12<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>If you&rsquo;re like me, your normal git workflow looks something like this:</p>
+
+<ol>
+<li>Do some work in a topic branch and need to rebase master into the branch.</li>
+<li><code>git checkout master</code></li>
+<li><code>git pull origin master</code> (or <code>fetch</code> and <code>merge</code>)</li>
+<li><code>git checkout topic-branch</code></li>
+<li><code>git rebase master</code></li>
+</ol>
+
+
+<p>Once you&rsquo;re done with your topic branch, it might look something like this:</p>
+
+<ol>
+<li><code>git checkout master</code></li>
+<li><code>git merge topic-branch</code></li>
+<li><code>git push origin master</code></li>
+</ol>
+
+
+<p>That&rsquo;s a lot of work, and as a developer we can definitely make that process easier. About 4 years ago, I came across a set of bash scripts that simplified this workflow greatly. The creator, <a href="http://reinh.com/">Rein Henrichs</a>, named them <a href="http://reinh.com/blog/2008/08/27/hack-and-and-ship.html">Hack &amp;&amp; Ship</a>.</p>
+
+<p>These tools worked great, but weren&rsquo;t flexible enough for me. They assumed that you would always be rebasing and pushing to the master branch. If this wasn&rsquo;t the case, you had to do everything by hand.</p>
+
+<p>Here are my updated versions of Hack &amp;&amp; Ship that allow you to rebase and push to any branch (such as <code>staging</code> or <code>qa</code>):</p>
+
+<h2>Hack</h2>
+
+<div><script src='https://gist.github.com/6952241.js?file=hack.sh'></script>
+<noscript><pre><code>#!/bin/sh
+
+CURRENT=`git branch | grep &#39;\*&#39; | awk &#39;{print $2}&#39;`
+TARGET=$1
+: ${TARGET:=&quot;master&quot;}
+
+echo &quot;\033[33m=&gt; git checkout ${TARGET}\033[0m&quot;
+git checkout ${TARGET}
+
+echo &quot;\033[33m=&gt; git pull origin ${TARGET}\033[0m&quot;
+git pull origin ${TARGET}
+
+echo &quot;\033[33m=&gt; git checkout ${CURRENT}\033[0m&quot;
+git checkout ${CURRENT}
+
+echo &quot;\033[33m=&gt; git rebase ${TARGET}\033[0m&quot;
+git rebase ${TARGET}</code></pre></noscript></div>
+
+
+<h2>Ship</h2>
+
+<div><script src='https://gist.github.com/6952241.js?file=ship.sh'></script>
+<noscript><pre><code>#!/bin/sh
+
+CURRENT=`git branch | grep &#39;\*&#39; | awk &#39;{print $2}&#39;`
+TARGET=$1
+: ${TARGET:=&quot;master&quot;}
+
+echo &quot;\033[33m=&gt; git checkout ${TARGET}\033[0m&quot;
+git checkout ${TARGET}
+
+echo &quot;\033[33m=&gt; git merge ${CURRENT}\033[0m&quot;
+git merge ${CURRENT}
+
+echo &quot;\033[33m=&gt; git push origin ${TARGET}\033[0m&quot;
+git push origin ${TARGET}
+
+echo &quot;\033[33m=&gt; git checkout ${CURRENT}\033[0m&quot;
+git checkout ${CURRENT}</code></pre></noscript></div>
+
+
+<p>To use them, create two files named <code>hack</code> and <code>ship</code> somewhere in your path (like <code>/usr/local/bin</code> maybe) and make them executable. Then, you can invoke them like so:</p>
+
+<p><code>hack</code> or <code>hack staging</code></p>
+
+<p><code>push</code> or <code>push qa</code></p>
+
+<p><code>hack &amp;&amp; ship</code></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/10/03/converting-a-rails-database-from-mysql-to-postgresql/">Converting a Rails Database From mySQL to PostgreSQL</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-03T18:18:00-05:00" pubdate data-updated="true">Oct 3<span>rd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>The <a href="https://github.com/ricardochimal/taps">taps</a> gem allows you to transfer database structure and data easily between db types.</p>
+
+<h2>Add the necessary gems to your Gemfile</h2>
+
+<div><script src='https://gist.github.com/6818918.js?file=1_gemfile.rb'></script>
+<noscript><pre><code>gem &#39;taps&#39;
+gem &#39;sqlite3&#39; # dependency of taps</code></pre></noscript></div>
+
+
+<p>Make sure you have the gems for both db types you&rsquo;ll be accessing.</p>
+
+<div><script src='https://gist.github.com/6818918.js?file=2_gemfile.rb'></script>
+<noscript><pre><code>gem &#39;mysql2&#39;
+gem &#39;pg&#39;</code></pre></noscript></div>
+
+
+<h2>Start the taps server</h2>
+
+<p>This will connect to the database that you are copying structure/date <em>from</em>.</p>
+
+<div><script src='https://gist.github.com/6818918.js?file=3_taps.sh'></script>
+<noscript><pre><code>taps server mysql2://username:password@localhost/dbname authusername authpassword</code></pre></noscript></div>
+
+
+<p><code>authusername</code> and <code>authpassword</code> can be whatever you want. This will be used to authenticate when pulling from this db server.</p>
+
+<h2>Pull the data into your new database</h2>
+
+<p>Make sure the new database has been created.</p>
+
+<div><script src='https://gist.github.com/6818918.js?file=4_taps.sh'></script>
+<noscript><pre><code>taps pull postgres://username:password@localhost/dbname http://authusername:authpassword@localhost:5000</code></pre></noscript></div>
+
+
+<p>Done!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/03/10/activeadmin-redirect-to-index-on-create-update/">ActiveAdmin: Redirect to Index on Create/Update</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/26/simple-rails-form-honeypot/">Simple Rails Form Honeypot</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/23/activeadmin-custom-metasearch-filter/">ActiveAdmin: Custom MetaSearch Filter</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/05/activerecord-random-ordering-with-pagination/">ActiveRecord Random Ordering with Pagination</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/19/track-backbone-dot-js-page-views-with-google-analytics/">Track Backbone.js Page Views with Google Analytics</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/activeadmin'>activeadmin (2)</a></li><li><a href='/blog/categories/activerecord'>activerecord (1)</a></li><li><a href='/blog/categories/backbone'>backbone (1)</a></li><li><a href='/blog/categories/git'>git (1)</a></li><li><a href='/blog/categories/mobile'>mobile (1)</a></li><li><a href='/blog/categories/mysql'>mysql (2)</a></li><li><a href='/blog/categories/phonegap'>phonegap (1)</a></li><li><a href='/blog/categories/postgresql'>postgresql (2)</a></li><li><a href='/blog/categories/rails'>rails (5)</a></li></ul>
+</section>
+
+  
+</aside>
+
+      </div>
+    </div>
+    <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Travis Roberts -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>. Design by <a href="http://octopressthemes.com">Octopress Themes</a></span>
+</p>
+
+</footer>
+    
+
+<script type="text/javascript">
+      var disqus_shortname = 'travisr';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+  </div>
+</body>
+</html>

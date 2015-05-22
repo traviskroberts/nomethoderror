@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: git | NoMethodError]]></title>
+  <link href="http://nomethoderror.com//blog/categories/git/atom.xml" rel="self"/>
+  <link href="http://nomethoderror.com//"/>
+  <updated>2015-04-09T14:19:37-05:00</updated>
+  <id>http://nomethoderror.com//</id>
+  <author>
+    <name><![CDATA[Travis Roberts]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Git Essentials - Hack &amp; Ship]]></title>
+    <link href="http://nomethoderror.com//blog/2013/10/12/git-essentials-hack-and-ship/"/>
+    <updated>2013-10-12T11:44:00-05:00</updated>
+    <id>http://nomethoderror.com//blog/2013/10/12/git-essentials-hack-and-ship</id>
+    <content type="html"><![CDATA[<p>If you&rsquo;re like me, your normal git workflow looks something like this:</p>
+
+<ol>
+<li>Do some work in a topic branch and need to rebase master into the branch.</li>
+<li><code>git checkout master</code></li>
+<li><code>git pull origin master</code> (or <code>fetch</code> and <code>merge</code>)</li>
+<li><code>git checkout topic-branch</code></li>
+<li><code>git rebase master</code></li>
+</ol>
+
+
+<p>Once you&rsquo;re done with your topic branch, it might look something like this:</p>
+
+<ol>
+<li><code>git checkout master</code></li>
+<li><code>git merge topic-branch</code></li>
+<li><code>git push origin master</code></li>
+</ol>
+
+
+<p>That&rsquo;s a lot of work, and as a developer we can definitely make that process easier. About 4 years ago, I came across a set of bash scripts that simplified this workflow greatly. The creator, <a href="http://reinh.com/">Rein Henrichs</a>, named them <a href="http://reinh.com/blog/2008/08/27/hack-and-and-ship.html">Hack &amp;&amp; Ship</a>.</p>
+
+<p>These tools worked great, but weren&rsquo;t flexible enough for me. They assumed that you would always be rebasing and pushing to the master branch. If this wasn&rsquo;t the case, you had to do everything by hand.</p>
+
+<p>Here are my updated versions of Hack &amp;&amp; Ship that allow you to rebase and push to any branch (such as <code>staging</code> or <code>qa</code>):</p>
+
+<h2>Hack</h2>
+
+<p><div><script src='https://gist.github.com/6952241.js?file=hack.sh'></script>
+<noscript><pre><code>#!/bin/sh
+
+CURRENT=`git branch | grep &#39;\*&#39; | awk &#39;{print $2}&#39;`
+TARGET=$1
+: ${TARGET:=&quot;master&quot;}
+
+echo &quot;\033[33m=&gt; git checkout ${TARGET}\033[0m&quot;
+git checkout ${TARGET}
+
+echo &quot;\033[33m=&gt; git pull origin ${TARGET}\033[0m&quot;
+git pull origin ${TARGET}
+
+echo &quot;\033[33m=&gt; git checkout ${CURRENT}\033[0m&quot;
+git checkout ${CURRENT}
+
+echo &quot;\033[33m=&gt; git rebase ${TARGET}\033[0m&quot;
+git rebase ${TARGET}</code></pre></noscript></div>
+</p>
+
+<h2>Ship</h2>
+
+<p><div><script src='https://gist.github.com/6952241.js?file=ship.sh'></script>
+<noscript><pre><code>#!/bin/sh
+
+CURRENT=`git branch | grep &#39;\*&#39; | awk &#39;{print $2}&#39;`
+TARGET=$1
+: ${TARGET:=&quot;master&quot;}
+
+echo &quot;\033[33m=&gt; git checkout ${TARGET}\033[0m&quot;
+git checkout ${TARGET}
+
+echo &quot;\033[33m=&gt; git merge ${CURRENT}\033[0m&quot;
+git merge ${CURRENT}
+
+echo &quot;\033[33m=&gt; git push origin ${TARGET}\033[0m&quot;
+git push origin ${TARGET}
+
+echo &quot;\033[33m=&gt; git checkout ${CURRENT}\033[0m&quot;
+git checkout ${CURRENT}</code></pre></noscript></div>
+</p>
+
+<p>To use them, create two files named <code>hack</code> and <code>ship</code> somewhere in your path (like <code>/usr/local/bin</code> maybe) and make them executable. Then, you can invoke them like so:</p>
+
+<p><code>hack</code> or <code>hack staging</code></p>
+
+<p><code>push</code> or <code>push qa</code></p>
+
+<p><code>hack &amp;&amp; ship</code></p>
+]]></content>
+  </entry>
+  
+</feed>

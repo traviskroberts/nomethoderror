@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: mobile | NoMethodError]]></title>
+  <link href="http://nomethoderror.com//blog/categories/mobile/atom.xml" rel="self"/>
+  <link href="http://nomethoderror.com//"/>
+  <updated>2015-04-09T14:19:37-05:00</updated>
+  <id>http://nomethoderror.com//</id>
+  <author>
+    <name><![CDATA[Travis Roberts]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Using PhoneGap FileTransfer to Download Multiple Files to the Device]]></title>
+    <link href="http://nomethoderror.com//blog/2013/11/17/using-phonegap-filetransfer-to-download-multiple-files-to-the-device/"/>
+    <updated>2013-11-17T18:46:00-06:00</updated>
+    <id>http://nomethoderror.com//blog/2013/11/17/using-phonegap-filetransfer-to-download-multiple-files-to-the-device</id>
+    <content type="html"><![CDATA[<p>I&rsquo;ve been working recently on a <a href="http://phonegap.com/">PhoneGap</a> app that is designed to operate offline, and receives incremental data updates from an API when the user has an Internet connection. These incremental updates also include new/updated product images. Since the app needs to operate offline, I have to download the files to the device when they are updated or added so they can be shown offline.</p>
+
+<p>PhoneGap has <a href="http://docs.phonegap.com/en/3.1.0/cordova_file_file.md.html">File and FileTransfer</a> plugins that allow you to access the device&rsquo;s file system and even upload/download files. The problem with these plugin are, almost all of the actions trigger callbacks, so it&rsquo;s hard to keep the thread of what is happening. The PhoneGap documentation for these plugins are slightly lacking, so it was difficult to figure out how to accomplish what I needed. Through a lot of Googling and trial &amp; error, I was finally able to get the following code working.</p>
+
+<p><div><script src='https://gist.github.com/9c8c9f1cc8d8d002dd5e.js?file=image_download.js'></script>
+<noscript><pre><code>imageDownloader = {
+  updateImages: function() {
+    this.remoteImages = [];
+    // ...code to get all of the images we need to download...
+    // in my app, it&#39;s a `SELECT DISTINCT(image) FROM products;` query
+    // example: [http://www.example.com/image1.jpg, http://www.example.com/image2.jpg, http://www.example.com/image3.jpg]
+    this.downloadImages();
+  },
+
+  downloadImages: function() {
+    var _this = this; // for use in the callbacks
+
+    // stop if we&#39;ve processed all of the images
+    if (this.remoteImages.length === 0) {
+      return;
+    }
+
+    // get the next image from the array
+    var image = this.remoteImages.pop();
+    var imageName = image.split(&#39;/&#39;).pop(); // just the image name (eg image1.jpg)
+
+    // access the filesystem
+    // &quot;LocalFileSystem.PERSISTENT&quot; means it is permanent and not temporary
+    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+      // the &quot;create: true&quot; option will create the file if it doesn&#39;t exist
+      // the &quot;exclusive: true&quot; option will skip the file if it already exists instead of re-downloading it
+      fileSystem.root.getFile(imageName, {create: true, exclusive: true}, function(fileEntry) {
+        // get the full path to the newly created file on the device
+        var localPath = fileEntry.fullPath;
+
+        // massage the path for android devices (not tested)
+        if (device.platform === &quot;Android&quot; &amp;&amp; localPath.indexOf(&quot;file://&quot;) === 0) {
+          localPath = localPath.substring(7);
+        }
+
+        // download the remote file and save it
+        var remoteFile = encodeURI(image.ProductImage);
+        var fileTransfer = new FileTransfer();
+        fileTransfer.download(remoteFile, localPath, function(newFileEntry) {
+          // successful download, continue to the next image
+          _this.downloadImages();
+        },
+        function(error) { // error callback for #download
+          console.log(&#39;Error with #download method.&#39;, error);
+          _this.downloadImages(); // continue working
+        });
+      },
+      function(error) { // error callback for #getFile
+        console.log(&#39;Error with #getFile method.&#39;, error);
+        _this.downloadImages(); // continue working
+      });
+    },
+    function(error) { // error callback for #requestFileSystem
+      console.log(&#39;Error with #requestFileSystem method.&#39;, error);
+    });
+  }
+};</code></pre></noscript></div>
+</p>
+
+<p>Ok, we have the files downloaded, but how to we show them in our app. As far as I could find, you can&rsquo;t refence images on the device&rsquo;s filesystem form the PhoneGap app.</p>
+
+<p>Luckily, the PhoneGap File plugin has a way to read files from the filesystem. It includes a method to read the file as a data url which converts it to a base64-encoded string.</p>
+
+<p>My app was written using Backbone with Handlebars templates. So, to display the image, I wrote a Handlebars helper to get the image from the file system and return it as a base64-encoded string. You&rsquo;ll notice that the helper actually gets an element via jQuery and sets it <code>src</code> attribute. I had to do it this way since all of the File plugin methods are asynchronous and handled with callback.</p>
+
+<p><div><script src='https://gist.github.com/9c8c9f1cc8d8d002dd5e.js?file=handlebars.js'></script>
+<noscript><pre><code>// product is a json object
+// ex: {id: 5, image: &#39;image1.jpg&#39;}
+Handlebars.registerHelper(&#39;base64ProductImage&#39;, function(product, options) {
+  var productID = product.id;
+  var imageName = product.image.split(&#39;/&#39;).pop();
+  window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+    fileSystem.root.getFile(imageName, {create: false}, function(fileEntry) {
+      var reader = new FileReader();
+      reader.onloadend = function(event) { // callback for when file is read
+        $(&quot;#base64-image-#{productID}&quot;).attr(&#39;src&#39;, event.target.result);
+      };
+      fileEntry.file(function(file) {
+        reader.readAsDataURL(file);
+      }, null);
+    }, null);
+  }, null);
+
+  return &#39;&#39;;
+});</code></pre></noscript></div>
+</p>
+
+<p>The helper can be called like so:</p>
+
+<p><div><script src='https://gist.github.com/9c8c9f1cc8d8d002dd5e.js?file=template.hbs'></script>
+<noscript><pre><code>&lt;img src=&quot;{{base64ProductImage product}}&quot; id=&quot;base64-image-{{product.id}}&quot; /&gt;</code></pre></noscript></div>
+</p>
+]]></content>
+  </entry>
+  
+</feed>
