@@ -4,7 +4,7 @@
   <title><![CDATA[Category: activeadmin | NoMethodError]]></title>
   <link href="http://nomethoderror.com//blog/categories/activeadmin/atom.xml" rel="self"/>
   <link href="http://nomethoderror.com//"/>
-  <updated>2015-05-21T21:54:57-05:00</updated>
+  <updated>2015-04-09T14:19:37-05:00</updated>
   <id>http://nomethoderror.com//</id>
   <author>
     <name><![CDATA[Travis Roberts]]></name>
@@ -96,7 +96,7 @@ end</code></pre></noscript></div>
 <noscript><pre><code>class User &lt; ActiveRecord::Base
   belongs_to :account
 
-  search_methods :address # tells meta_search to use this method as a filter
+  search_methods :group # tells meta_search to use this method as a filter
 
   scope :group, -&gt;(group_id) { joins(:account =&gt; :group).where(&quot;groups.id = ?&quot;, group_id) }
 end</code></pre></noscript></div>

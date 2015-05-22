@@ -4,7 +4,7 @@
   <title><![CDATA[Category: backbone | NoMethodError]]></title>
   <link href="http://nomethoderror.com//blog/categories/backbone/atom.xml" rel="self"/>
   <link href="http://nomethoderror.com//"/>
-  <updated>2015-05-21T21:54:57-05:00</updated>
+  <updated>2015-04-09T14:19:37-05:00</updated>
   <id>http://nomethoderror.com//</id>
   <author>
     <name><![CDATA[Travis Roberts]]></name>
@@ -43,7 +43,7 @@ ga(&#39;send&#39;, &#39;pageview&#39;);</code></pre></noscript></div>
 
 _pageView: function() {
   var path = Backbone.history.getFragment();
-  ga(&#39;send&#39;, &#39;pageview&#39;, {page: path});
+  ga(&#39;send&#39;, &#39;pageview&#39;, {page: &quot;/&quot; + path});
 }</code></pre></noscript></div>
 </p>
 

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: activerecord | NoMethodError]]></title>
   <link href="http://nomethoderror.com//blog/categories/activerecord/atom.xml" rel="self"/>
   <link href="http://nomethoderror.com//"/>
-  <updated>2015-05-21T21:54:57-05:00</updated>
+  <updated>2015-04-09T14:19:37-05:00</updated>
   <id>http://nomethoderror.com//</id>
   <author>
     <name><![CDATA[Travis Roberts]]></name>
@@ -47,7 +47,8 @@ end</code></pre></noscript></div>
 <noscript><pre><code>class MembersController &lt; ApplicationController
 
   def index
-    @members = Member.order(&quot;RAND(#{cookies[:rand_seed]})&quot;).page(params[:page]).per(15)
+    seed_val = Member.connection.quote(cookies[:rand_seed])
+    @members = Member.order(&quot;RAND(#{seed_val})&quot;).page(params[:page]).per(15)
   end
   
 end</code></pre></noscript></div>
@@ -61,7 +62,8 @@ end</code></pre></noscript></div>
 <noscript><pre><code>class MembersController &lt; ApplicationController
 
   def index
-    Member.connection.execute(&quot;select setseed(#{cookies[:rand_seed]})&quot;)
+    seed_val = Member.connection.quote(cookies[:rand_seed])
+    Member.connection.execute(&quot;select setseed(#{seed_val})&quot;)
     @members = Member.order(&#39;random()&#39;).page(params[:page]).per(15)
   end
 
