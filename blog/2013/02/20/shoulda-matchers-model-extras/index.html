@@ -1,0 +1,364 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Shoulda Matcher Model Extras - NoMethodError</title>
+  <meta name="author" content="Travis Roberts">
+
+  
+  <meta name="description" content="If you use RSpec with your Rails projects, chances are you also use shoulda_matchers (and if you don&rsquo;t, what are you doing with your life?!). &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://nomethoderror.com//blog/2013/02/20/shoulda-matchers-model-extras/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="NoMethodError" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=Arvo:400,400italic,700,700italic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=Merienda:700" rel="stylesheet" type="text/css">
+
+  
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-2032096-4', 'nomethoderror.com');
+    ga('send', 'pageview');
+
+    // OLD CODE
+    // var _gaq = _gaq || [];
+    // _gaq.push(['_setAccount', 'UA-2032096-4']);
+    // _gaq.push(['_trackPageview']);
+
+    // (function() {
+    //   var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    //   ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    //   var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    // })();
+  </script>
+
+
+</head>
+
+<body>
+  <div id="navigation">
+    <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:nomethoderror.com/" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  </div>
+  <header role="banner"><hgroup>
+  <h1><a href="/">NoMethodError</a></h1>
+  
+    <h2><span class="raise">raise</span> <span class="string">"a blog about rails, javascript, and other stuff"</span></h2>
+  
+</hgroup>
+
+</header>
+  <div id="body"  >
+    <div id="main">
+      <div id="content">
+        <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Shoulda Matcher Model Extras</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-20T18:00:00-06:00" pubdate data-updated="true">Feb 20<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>If you use RSpec with your Rails projects, chances are you also use <a href="https://github.com/thoughtbot/shoulda-matchers">shoulda_matchers</a> (and if you don&rsquo;t, what are you doing with your life?!). You probably already know all about the basic model matchers, like the ones below.</p>
+
+<div><script src='https://gist.github.com/a3cb3677eb764b5cd365.js?file=1_user.rb'></script>
+<noscript><pre><code>class User &lt; ActiveRecord::Base
+  belongs_to :organization
+  has_many :projects
+
+  validates :name, :presence =&gt; true
+  validates :email, :uniqueness =&gt; true
+end</code></pre></noscript></div>
+
+
+
+
+<div><script src='https://gist.github.com/a3cb3677eb764b5cd365.js?file=2_user_spec.rb'></script>
+<noscript><pre><code>require &#39;spec_helper&#39;
+describe User do
+  context &#39;associations&#39; do
+    it { should belong_to(:organization) }
+    it { should have_many(:projects) }
+  end
+
+  context &#39;validations&#39; do
+    it { should validate_presence_of(:name) }
+    it { should validate_uniqueness_of(:email) }
+  end
+end</code></pre></noscript></div>
+
+
+<h3>Association Extras</h3>
+
+<p>There are a ton of extra options you can use with the association matchers (pretty much any option you can pass to an association). Below are just a few.</p>
+
+<div><script src='https://gist.github.com/a3cb3677eb764b5cd365.js?file=3_user.rb'></script>
+<noscript><pre><code>class User &lt; ActiveRecord::Base
+  belongs_to :organization, :class_name =&gt; &#39;UserOrganization&#39;
+  has_many :contracts
+  has_many :jobs, :through =&gt; :contracts
+  has_many :projects, :order =&gt; &#39;date DESC&#39;, :dependent =&gt; :destroy
+
+  accepts_nested_attributes_for :projects, :limit =&gt; 3
+end</code></pre></noscript></div>
+
+
+
+
+<div><script src='https://gist.github.com/a3cb3677eb764b5cd365.js?file=4_user_spec.rb'></script>
+<noscript><pre><code>require &#39;spec_helper&#39;
+
+describe User do
+  context &#39;associations&#39; do
+    it { should belong_to(:organization).class_name(&#39;UserOrganization&#39;) }
+    it { should have_many(:contracts) }
+    it { should have_many(:jobs).through(:contracts) }
+    it { should have_many(:projects).order(&#39;date DESC&#39;).dependent(:destroy) }
+    it { should accept_nested_attributes_for(:projects).limit(3) }
+  end
+end</code></pre></noscript></div>
+
+
+<h3>Validation Extras</h3>
+
+<p>There are even more options for use with the validation matchers. Here&rsquo;s a small sampling (including some mass assignment matchers).</p>
+
+<div><script src='https://gist.github.com/a3cb3677eb764b5cd365.js?file=5_user.rb'></script>
+<noscript><pre><code>class User &lt; ActiveRecord::Base
+  validates :name, :length =&gt; { :minimum =&gt; 10, :maximum =&gt; 100 }
+  validates :email, :format =&gt; { :with =&gt; /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/ }
+  validates :status, :inclusion =&gt; { :in =&gt; %w(active inactive suspended) }
+
+  attr_accessible :name, :email
+  attr_accessible :name, :email, :status, :as =&gt; :admin
+end</code></pre></noscript></div>
+
+
+
+
+<div><script src='https://gist.github.com/a3cb3677eb764b5cd365.js?file=6_user_spec.rb'></script>
+<noscript><pre><code>require &#39;spec_helper&#39;
+describe User do
+  context &#39;validations&#39; do
+    it { should ensure_length_of(:name).is_at_least(10).is_at_most(100) }
+    it { should validate_format_of(:email).with(&#39;user@email.com&#39;) }
+    it { should validate_format_of(:email).not_with(&#39;user@email&#39;) }
+    it { should ensure_inclusion_of(:status).in_array([&#39;active&#39;, &#39;inactive&#39;, &#39;suspended&#39;]) }
+  end
+
+  context &#39;mass assignment&#39; do
+    it { should allow_mass_assignment_of(:name) }
+    it { should allow_mass_assignment_of(:email) }
+    it { should_not allow_mass_assignment_of(:status) }
+    it { should allow_mass_assignment_of(:status).as(:admin) }
+  end
+end</code></pre></noscript></div>
+
+
+<p>These are just a few of the extras that <kbd>shoulda_matchers</kbd> offers. I would highly recommend that you read through the <a href="http://rubydoc.info/github/thoughtbot/shoulda-matchers/master/frames">documentation</a> to discover all the things you can do.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Travis Roberts</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-20T18:00:00-06:00" pubdate data-updated="true">Feb 20<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/rails/'>rails</a>, <a class='category' href='/blog/categories/rspec/'>rspec</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://nomethoderror.com//blog/2013/02/20/shoulda-matchers-model-extras/" data-via="travisroberts" data-counturl="http://nomethoderror.com//blog/2013/02/20/shoulda-matchers-model-extras/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/10/03/converting-a-rails-database-from-mysql-to-postgresql/" title="Next Post: Converting a Rails Database from mySQL to PostgreSQL">Converting a Rails Database from mySQL to PostgreSQL &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/03/10/activeadmin-redirect-to-index-on-create-update/">ActiveAdmin: Redirect to Index on Create/Update</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/26/simple-rails-form-honeypot/">Simple Rails Form Honeypot</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/23/activeadmin-custom-metasearch-filter/">ActiveAdmin: Custom MetaSearch Filter</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/05/activerecord-random-ordering-with-pagination/">ActiveRecord Random Ordering with Pagination</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/19/track-backbone-dot-js-page-views-with-google-analytics/">Track Backbone.js Page Views with Google Analytics</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/activeadmin'>activeadmin (2)</a></li><li><a href='/blog/categories/activerecord'>activerecord (1)</a></li><li><a href='/blog/categories/backbone'>backbone (1)</a></li><li><a href='/blog/categories/git'>git (1)</a></li><li><a href='/blog/categories/mobile'>mobile (1)</a></li><li><a href='/blog/categories/mysql'>mysql (2)</a></li><li><a href='/blog/categories/phonegap'>phonegap (1)</a></li><li><a href='/blog/categories/postgresql'>postgresql (2)</a></li><li><a href='/blog/categories/rails'>rails (6)</a></li><li><a href='/blog/categories/rspec'>rspec (1)</a></li></ul>
+</section>
+
+  
+</aside>
+
+
+      </div>
+    </div>
+    <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Travis Roberts -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>. Design by <a href="http://octopressthemes.com">Octopress Themes</a></span>
+</p>
+
+</footer>
+    
+
+<script type="text/javascript">
+      var disqus_shortname = 'travisr';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://nomethoderror.com//blog/2013/02/20/shoulda-matchers-model-extras/';
+        var disqus_url = 'http://nomethoderror.com//blog/2013/02/20/shoulda-matchers-model-extras/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+  </div>
+</body>
+</html>

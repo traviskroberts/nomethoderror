@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: rspec | NoMethodError]]></title>
+  <link href="http://nomethoderror.com//blog/categories/rspec/atom.xml" rel="self"/>
+  <link href="http://nomethoderror.com//"/>
+  <updated>2015-05-21T21:40:53-05:00</updated>
+  <id>http://nomethoderror.com//</id>
+  <author>
+    <name><![CDATA[Travis Roberts]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Shoulda Matcher Model Extras]]></title>
+    <link href="http://nomethoderror.com//blog/2013/02/20/shoulda-matchers-model-extras/"/>
+    <updated>2013-02-20T18:00:00-06:00</updated>
+    <id>http://nomethoderror.com//blog/2013/02/20/shoulda-matchers-model-extras</id>
+    <content type="html"><![CDATA[<p>If you use RSpec with your Rails projects, chances are you also use <a href="https://github.com/thoughtbot/shoulda-matchers">shoulda_matchers</a> (and if you don&rsquo;t, what are you doing with your life?!). You probably already know all about the basic model matchers, like the ones below.</p>
+
+<p><div><script src='https://gist.github.com/a3cb3677eb764b5cd365.js?file=1_user.rb'></script>
+<noscript><pre><code>class User &lt; ActiveRecord::Base
+  belongs_to :organization
+  has_many :projects
+
+  validates :name, :presence =&gt; true
+  validates :email, :uniqueness =&gt; true
+end</code></pre></noscript></div>
+</p>
+
+<p><div><script src='https://gist.github.com/a3cb3677eb764b5cd365.js?file=2_user_spec.rb'></script>
+<noscript><pre><code>require &#39;spec_helper&#39;
+describe User do
+  context &#39;associations&#39; do
+    it { should belong_to(:organization) }
+    it { should have_many(:projects) }
+  end
+
+  context &#39;validations&#39; do
+    it { should validate_presence_of(:name) }
+    it { should validate_uniqueness_of(:email) }
+  end
+end</code></pre></noscript></div>
+</p>
+
+<h3>Association Extras</h3>
+
+<p>There are a ton of extra options you can use with the association matchers (pretty much any option you can pass to an association). Below are just a few.</p>
+
+<p><div><script src='https://gist.github.com/a3cb3677eb764b5cd365.js?file=3_user.rb'></script>
+<noscript><pre><code>class User &lt; ActiveRecord::Base
+  belongs_to :organization, :class_name =&gt; &#39;UserOrganization&#39;
+  has_many :contracts
+  has_many :jobs, :through =&gt; :contracts
+  has_many :projects, :order =&gt; &#39;date DESC&#39;, :dependent =&gt; :destroy
+
+  accepts_nested_attributes_for :projects, :limit =&gt; 3
+end</code></pre></noscript></div>
+</p>
+
+<p><div><script src='https://gist.github.com/a3cb3677eb764b5cd365.js?file=4_user_spec.rb'></script>
+<noscript><pre><code>require &#39;spec_helper&#39;
+
+describe User do
+  context &#39;associations&#39; do
+    it { should belong_to(:organization).class_name(&#39;UserOrganization&#39;) }
+    it { should have_many(:contracts) }
+    it { should have_many(:jobs).through(:contracts) }
+    it { should have_many(:projects).order(&#39;date DESC&#39;).dependent(:destroy) }
+    it { should accept_nested_attributes_for(:projects).limit(3) }
+  end
+end</code></pre></noscript></div>
+</p>
+
+<h3>Validation Extras</h3>
+
+<p>There are even more options for use with the validation matchers. Here&rsquo;s a small sampling (including some mass assignment matchers).</p>
+
+<p><div><script src='https://gist.github.com/a3cb3677eb764b5cd365.js?file=5_user.rb'></script>
+<noscript><pre><code>class User &lt; ActiveRecord::Base
+  validates :name, :length =&gt; { :minimum =&gt; 10, :maximum =&gt; 100 }
+  validates :email, :format =&gt; { :with =&gt; /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/ }
+  validates :status, :inclusion =&gt; { :in =&gt; %w(active inactive suspended) }
+
+  attr_accessible :name, :email
+  attr_accessible :name, :email, :status, :as =&gt; :admin
+end</code></pre></noscript></div>
+</p>
+
+<p><div><script src='https://gist.github.com/a3cb3677eb764b5cd365.js?file=6_user_spec.rb'></script>
+<noscript><pre><code>require &#39;spec_helper&#39;
+describe User do
+  context &#39;validations&#39; do
+    it { should ensure_length_of(:name).is_at_least(10).is_at_most(100) }
+    it { should validate_format_of(:email).with(&#39;user@email.com&#39;) }
+    it { should validate_format_of(:email).not_with(&#39;user@email&#39;) }
+    it { should ensure_inclusion_of(:status).in_array([&#39;active&#39;, &#39;inactive&#39;, &#39;suspended&#39;]) }
+  end
+
+  context &#39;mass assignment&#39; do
+    it { should allow_mass_assignment_of(:name) }
+    it { should allow_mass_assignment_of(:email) }
+    it { should_not allow_mass_assignment_of(:status) }
+    it { should allow_mass_assignment_of(:status).as(:admin) }
+  end
+end</code></pre></noscript></div>
+</p>
+
+<p>These are just a few of the extras that <kbd>shoulda_matchers</kbd> offers. I would highly recommend that you read through the <a href="http://rubydoc.info/github/thoughtbot/shoulda-matchers/master/frames">documentation</a> to discover all the things you can do.</p>
+]]></content>
+  </entry>
+  
+</feed>
