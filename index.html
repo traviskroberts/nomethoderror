@@ -987,6 +987,168 @@ end</code></pre></noscript></div>
 
     </article>
   
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/10/02/using-god-gem-to-monitor-mysql/">Using God Gem to Monitor mySQL</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-10-02T12:00:00-05:00" pubdate data-updated="true">Oct 2<span>nd</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I recently ran into a problem on a client server where the <code>msyqld</code> process died, and neither of us noticed it for almost 24 hours. That meant that the site was completely useless that entire time. Needless to say, the client wasn&rsquo;t thrilled about this.</p>
+
+<p>I told him that I&rsquo;d look into setting up a monitoring service to, at the very least, notify me if <code>msyqld</code> ever crashed. During my research, I stumbled upon the god gem (which I&rsquo;d used in the past to monitor mongrel processes back in the days before Passenger). I didn&rsquo;t realize it could be used to monitor other processes as well, such as <code>msyqld</code>.</p>
+
+<p>God is a rubygem, so it&rsquo;s easy to install on any *nix operating system. It&rsquo;s config files are also written in Ruby, so that makes it even better.</p>
+
+<p>What you&rsquo;ll need to get the script running:</p>
+
+<ol>
+<li><p>Install the god gem (as root).</p>
+
+<p><pre>sudo gem install god</pre></p></li>
+<li><p>Find the location of your <code>msyqld</code> pid file.</p>
+
+<p><pre>mysqladmin -u root -p variables | grep pid_file</pre></p></li>
+<li><p>Determine the command to start/stop/restart the <code>msyqld</code> service. Usually <code>/etc/init.d/mysqld</code></p></li>
+</ol>
+
+
+<p>Here is the config file I wrote to watch my mysqld process:</p>
+
+<div><script src='https://gist.github.com/c1f96cfc74a73316c35b.js?file=mysql.rb'></script>
+<noscript><pre><code>  # run in non-daemonized mode (so you can monitor it) with `god -c /path/to/mysql.god -D`
+  # run normally with `god -c /path/to/mysql.god`
+
+  # Settings for email notifications (optional)
+  God::Contacts::Email.defaults do |d|
+    d.from_email = &#39;god@my-app.com&#39;
+    d.from_name = &#39;God&#39;
+    d.delivery_method = :smtp # this can also be :sendmail
+    d.server_host = &#39;smtp.myapp.com&#39;
+    d.server_port = 25
+    d.server_auth = true
+    d.server_domain = &#39;myapp.com&#39;
+    d.server_user = &#39;smtp_user@myapp.com&#39;
+    d.server_password = &#39;password&#39;
+  end
+
+  # you can create as many email entries as you&#39;d like
+  God.contact(:email) do |c|
+    c.name = &#39;me&#39;
+    c.to_email = &#39;me@email.com&#39;
+  end
+
+  God.watch do |w|
+    # you can name this whatever you want
+    w.name = &quot;mySQL Server&quot;
+
+    # polling interval
+    w.interval = 30.seconds
+
+    # command to start service
+    w.start = &quot;/etc/init.d/mysqld start &amp;&amp; /etc/init.d/httpd restart&quot;
+
+    # command to stop service
+    w.stop = &quot;/etc/init.d/mysqld stop&quot;
+
+    # command to restart service
+    w.restart = &quot;/etc/init.d/mysqld restart &amp;&amp; /etc/init.d/httpd restart&quot;
+
+    # how long to wait after starting service before monitoring resumes
+    w.start_grace = 20.seconds
+
+    # how long to wait after restarting service before monitoring resumes
+    w.restart_grace = 20.seconds
+
+    # location of pid file
+    w.pid_file = &quot;/var/run/mysqld/mysqld.pid&quot;
+
+    # tell god to delete the pid file when mysqld crashes
+    w.behavior(:clean_pid_file)
+
+    # determine the state on startup
+    w.transition(:init, { true =&gt; :up, false =&gt; :start }) do |on|
+      on.condition(:process_running) do |c|
+        c.running = true
+      end
+    end
+
+    # determine when process has finished starting
+    w.transition([:start, :restart], :up) do |on|
+      on.condition(:process_running) do |c|
+        c.running = true
+      end
+      # failsafe
+      on.condition(:tries) do |c|
+        c.times = 8
+        c.within = 2.minutes
+        c.transition = :start
+      end
+    end
+
+    # start if process is not running
+    w.transition(:up, :start) do |on|
+      on.condition(:process_exits) do |c|
+        # send an email to me to notify me that the service has crashed
+        c.notify = &#39;me&#39;
+      end
+    end
+
+    # lifecycle
+    w.lifecycle do |on|
+      # If the service keeps triggering a restart over and over, it is considered to be &quot;flapping&quot;.
+      on.condition(:flapping) do |c|
+        c.to_state = [:start, :restart]
+        c.times = 5
+        c.within = 1.minute
+        c.transition = :unmonitored
+        # If the service is flapping, wait 10 minutes, then try to start/restart again.
+        c.retry_in = 10.minutes
+        c.retry_times = 5
+        c.retry_within = 2.hours
+      end
+    end
+  end</code></pre></noscript></div>
+
+
+<p>A few things to note about my script:</p>
+
+<ol>
+<li>In my start and restart commands, I also restart Apache. Running my site with Passenger, I would get a Rack error when <code>mysqld</code> restarted, but apache hadn&rsquo;t. YMMV.</li>
+<li>I&rsquo;m using an SMTP server for my email notification. You can also use <code>sendmail</code>, or you can exclude the email notifications altogether.</li>
+<li>When running the script for the first time, it&rsquo;s a good idea to add the <code>-D</code> flag. This runs god in non-daemonized mode so all output is piped to STDOUT. That way, you can watch what it&rsquo;s doing to ensure everything is working correctly.</li>
+</ol>
+
+
+<p>For more information about the god gem, see their site: <a href="http://god.rubyforge.org/">god.rubyforge.org</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
   <div class="pagination">
     
     <a href="/blog/archives">Blog Archives</a>
@@ -1027,7 +1189,7 @@ end</code></pre></noscript></div>
 
 <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/activeadmin'>activeadmin (2)</a></li><li><a href='/blog/categories/activerecord'>activerecord (1)</a></li><li><a href='/blog/categories/backbone'>backbone (1)</a></li><li><a href='/blog/categories/git'>git (1)</a></li><li><a href='/blog/categories/mobile'>mobile (1)</a></li><li><a href='/blog/categories/mysql'>mysql (2)</a></li><li><a href='/blog/categories/phonegap'>phonegap (1)</a></li><li><a href='/blog/categories/postgresql'>postgresql (2)</a></li><li><a href='/blog/categories/rails'>rails (6)</a></li><li><a href='/blog/categories/rspec'>rspec (1)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/activeadmin'>activeadmin (2)</a></li><li><a href='/blog/categories/activerecord'>activerecord (1)</a></li><li><a href='/blog/categories/backbone'>backbone (1)</a></li><li><a href='/blog/categories/git'>git (1)</a></li><li><a href='/blog/categories/mobile'>mobile (1)</a></li><li><a href='/blog/categories/mysql'>mysql (3)</a></li><li><a href='/blog/categories/phonegap'>phonegap (1)</a></li><li><a href='/blog/categories/postgresql'>postgresql (2)</a></li><li><a href='/blog/categories/rails'>rails (7)</a></li><li><a href='/blog/categories/rspec'>rspec (1)</a></li></ul>
 </section>
 
   

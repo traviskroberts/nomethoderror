@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Simple Rails Form Honeypot - NoMethodError</title>
+  <title>Using God Gem to Monitor mySQL - NoMethodError</title>
   <meta name="author" content="Travis Roberts">
 
   
-  <meta name="description" content="If you have a form on your Rails site, chances are you get a fair amount of spam submissions from automated bots. One solution for preventing spam is &hellip;">
+  <meta name="description" content="I recently ran into a problem on a client server where the msyqld process died, and neither of us noticed it for almost 24 hours. That meant that the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://nomethoderror.com//blog/2014/02/26/simple-rails-form-honeypot/">
+  <link rel="canonical" href="http://nomethoderror.com//blog/2011/10/02/using-god-gem-to-monitor-mysql/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -92,7 +92,7 @@
   
   <header>
     
-      <h1 class="entry-title">Simple Rails Form Honeypot</h1>
+      <h1 class="entry-title">Using God Gem to Monitor mySQL</h1>
     
     
       <p class="meta">
@@ -108,80 +108,140 @@
   
 
 
-<time datetime="2014-02-26T20:48:48-06:00" pubdate data-updated="true">Feb 26<span>th</span>, 2014</time>
+<time datetime="2011-10-02T12:00:00-05:00" pubdate data-updated="true">Oct 2<span>nd</span>, 2011</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>If you have a form on your Rails site, chances are you get a fair amount of spam submissions from automated bots. One solution for preventing spam is by using a captcha field. They usually work very well to prevent spam, but they add a burden to human users. Another, less intrusive solution is to use a honeypot. A honeypot is a field that only bots can see, so you can know a form submission is spam if that field has a value.</p>
+<div class="entry-content"><p>I recently ran into a problem on a client server where the <code>msyqld</code> process died, and neither of us noticed it for almost 24 hours. That meant that the site was completely useless that entire time. Needless to say, the client wasn&rsquo;t thrilled about this.</p>
 
-<p>There are gems available that will add a honeypot for you, but if you prefer to implement it yourself, it&rsquo;s very straightforward.</p>
+<p>I told him that I&rsquo;d look into setting up a monitoring service to, at the very least, notify me if <code>msyqld</code> ever crashed. During my research, I stumbled upon the god gem (which I&rsquo;d used in the past to monitor mongrel processes back in the days before Passenger). I didn&rsquo;t realize it could be used to monitor other processes as well, such as <code>msyqld</code>.</p>
 
-<p>In your form, just add an extra field that you&rsquo;ll use to detect unauthorized submissions. Make sure to name it something normal so spam bots will populate it. I prefer to use the name &ldquo;content&rdquo;. Notice that the field has its tabindex attribute set to -1. This will prevent the field from being selected if a user tabs through the field. I&rsquo;ve also added some inline hint text in case a user with a screen reader fills out the form.</p>
+<p>God is a rubygem, so it&rsquo;s easy to install on any *nix operating system. It&rsquo;s config files are also written in Ruby, so that makes it even better.</p>
 
-<div><script src='https://gist.github.com/9201887.js?file=1_form.erb'></script>
-<noscript><pre><code>&lt;%= form_tag form_submit_path do %&gt;
-  &lt;fieldset&gt;
-    &lt;legend&gt;Contact Info&lt;/legend&gt;
+<p>What you&rsquo;ll need to get the script running:</p>
 
-    &lt;div class=&quot;form-group&quot;&gt;
-      &lt;%= label_tag :name %&gt;
-      &lt;%= text_field_tag :name %&gt;
-    &lt;/div&gt;
+<ol>
+<li><p>Install the god gem (as root).</p>
 
-    &lt;div class=&quot;form-group&quot;&gt;
-      &lt;%= label_tag :email %&gt;
-      &lt;%= text_field_tag :email %&gt;
-    &lt;/div&gt;
+<p><pre>sudo gem install god</pre></p></li>
+<li><p>Find the location of your <code>msyqld</code> pid file.</p>
 
-    &lt;div class=&quot;form-group&quot;&gt;
-      &lt;%= label_tag :phone %&gt;
-      &lt;%= text_field_tag :phone %&gt;
-    &lt;/div&gt;
-
-    &lt;div class=&quot;form-group honeypot&quot;&gt;
-      &lt;%= label_tag :content %&gt;
-      &lt;%= text_field_tag :content %&gt;
-      &lt;span class=&quot;help&quot;&gt;Do not fill in this field. It is an anti-spam measure.&lt;/span&gt;
-    &lt;/div&gt;
-  &lt;/fieldset&gt;
-
-  &lt;button type=&quot;submit&quot;&gt;Submit&lt;/button&gt;
-&lt;%- end -%&gt;</code></pre></noscript></div>
+<p><pre>mysqladmin -u root -p variables | grep pid_file</pre></p></li>
+<li><p>Determine the command to start/stop/restart the <code>msyqld</code> service. Usually <code>/etc/init.d/mysqld</code></p></li>
+</ol>
 
 
-<p>In your stylesheet, just add some styles to make sure that a human won&rsquo;t see the field on a desktop or mobile device.</p>
+<p>Here is the config file I wrote to watch my mysqld process:</p>
 
-<div><script src='https://gist.github.com/9201887.js?file=2_styles.scss'></script>
-<noscript><pre><code>.form-group {
-  margin-bottom: 1em;
-  width: 100%;
+<div><script src='https://gist.github.com/c1f96cfc74a73316c35b.js?file=mysql.rb'></script>
+<noscript><pre><code>  # run in non-daemonized mode (so you can monitor it) with `god -c /path/to/mysql.god -D`
+  # run normally with `god -c /path/to/mysql.god`
 
-  &amp;.honeypot {
-    position: absolute;
-    left: -9999px;
-  }
-}</code></pre></noscript></div>
-
-
-<p>The final step is to add a check in your controller to only process the form if the value of the field is blank. For me, I&rsquo;m only sending a notification email if the form submission is certified anti-spam.</p>
-
-<div><script src='https://gist.github.com/9201887.js?file=3_controller.rb'></script>
-<noscript><pre><code>class FormController &lt; ApplicationController
-
-  def submit
-    SiteMailer.contact(params).deliver unless params[:content].present? # honeypot check
-    flash[:success] = &quot;Your message has been submitted. Thank you!&quot;
-    redirect_to root_url
+  # Settings for email notifications (optional)
+  God::Contacts::Email.defaults do |d|
+    d.from_email = &#39;god@my-app.com&#39;
+    d.from_name = &#39;God&#39;
+    d.delivery_method = :smtp # this can also be :sendmail
+    d.server_host = &#39;smtp.myapp.com&#39;
+    d.server_port = 25
+    d.server_auth = true
+    d.server_domain = &#39;myapp.com&#39;
+    d.server_user = &#39;smtp_user@myapp.com&#39;
+    d.server_password = &#39;password&#39;
   end
 
-end
-</code></pre></noscript></div>
+  # you can create as many email entries as you&#39;d like
+  God.contact(:email) do |c|
+    c.name = &#39;me&#39;
+    c.to_email = &#39;me@email.com&#39;
+  end
+
+  God.watch do |w|
+    # you can name this whatever you want
+    w.name = &quot;mySQL Server&quot;
+
+    # polling interval
+    w.interval = 30.seconds
+
+    # command to start service
+    w.start = &quot;/etc/init.d/mysqld start &amp;&amp; /etc/init.d/httpd restart&quot;
+
+    # command to stop service
+    w.stop = &quot;/etc/init.d/mysqld stop&quot;
+
+    # command to restart service
+    w.restart = &quot;/etc/init.d/mysqld restart &amp;&amp; /etc/init.d/httpd restart&quot;
+
+    # how long to wait after starting service before monitoring resumes
+    w.start_grace = 20.seconds
+
+    # how long to wait after restarting service before monitoring resumes
+    w.restart_grace = 20.seconds
+
+    # location of pid file
+    w.pid_file = &quot;/var/run/mysqld/mysqld.pid&quot;
+
+    # tell god to delete the pid file when mysqld crashes
+    w.behavior(:clean_pid_file)
+
+    # determine the state on startup
+    w.transition(:init, { true =&gt; :up, false =&gt; :start }) do |on|
+      on.condition(:process_running) do |c|
+        c.running = true
+      end
+    end
+
+    # determine when process has finished starting
+    w.transition([:start, :restart], :up) do |on|
+      on.condition(:process_running) do |c|
+        c.running = true
+      end
+      # failsafe
+      on.condition(:tries) do |c|
+        c.times = 8
+        c.within = 2.minutes
+        c.transition = :start
+      end
+    end
+
+    # start if process is not running
+    w.transition(:up, :start) do |on|
+      on.condition(:process_exits) do |c|
+        # send an email to me to notify me that the service has crashed
+        c.notify = &#39;me&#39;
+      end
+    end
+
+    # lifecycle
+    w.lifecycle do |on|
+      # If the service keeps triggering a restart over and over, it is considered to be &quot;flapping&quot;.
+      on.condition(:flapping) do |c|
+        c.to_state = [:start, :restart]
+        c.times = 5
+        c.within = 1.minute
+        c.transition = :unmonitored
+        # If the service is flapping, wait 10 minutes, then try to start/restart again.
+        c.retry_in = 10.minutes
+        c.retry_times = 5
+        c.retry_within = 2.hours
+      end
+    end
+  end</code></pre></noscript></div>
 
 
+<p>A few things to note about my script:</p>
 
+<ol>
+<li>In my start and restart commands, I also restart Apache. Running my site with Passenger, I would get a Rack error when <code>mysqld</code> restarted, but apache hadn&rsquo;t. YMMV.</li>
+<li>I&rsquo;m using an SMTP server for my email notification. You can also use <code>sendmail</code>, or you can exclude the email notifications altogether.</li>
+<li>When running the script for the first time, it&rsquo;s a good idea to add the <code>-D</code> flag. This runs god in non-daemonized mode so all output is piped to STDOUT. That way, you can watch what it&rsquo;s doing to ensure everything is working correctly.</li>
+</ol>
+
+
+<p>For more information about the god gem, see their site: <a href="http://god.rubyforge.org/">god.rubyforge.org</a></p>
 </div>
 
 
@@ -204,12 +264,12 @@ end
   
 
 
-<time datetime="2014-02-26T20:48:48-06:00" pubdate data-updated="true">Feb 26<span>th</span>, 2014</time>
+<time datetime="2011-10-02T12:00:00-05:00" pubdate data-updated="true">Oct 2<span>nd</span>, 2011</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/rails/'>rails</a>
+    <a class='category' href='/blog/categories/mysql/'>mysql</a>, <a class='category' href='/blog/categories/rails/'>rails</a>
   
 </span>
 
@@ -218,7 +278,7 @@ end
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://nomethoderror.com//blog/2014/02/26/simple-rails-form-honeypot/" data-via="travisroberts" data-counturl="http://nomethoderror.com//blog/2014/02/26/simple-rails-form-honeypot/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://nomethoderror.com//blog/2011/10/02/using-god-gem-to-monitor-mysql/" data-via="travisroberts" data-counturl="http://nomethoderror.com//blog/2011/10/02/using-god-gem-to-monitor-mysql/" >Tweet</a>
   
   
   
@@ -227,10 +287,8 @@ end
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2014/02/23/activeadmin-custom-metasearch-filter/" title="Previous Post: ActiveAdmin: Custom MetaSearch Filter">&laquo; ActiveAdmin: Custom MetaSearch Filter</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2014/03/10/activeadmin-redirect-to-index-on-create-update/" title="Next Post: ActiveAdmin: Redirect to Index on Create/Update">ActiveAdmin: Redirect to Index on Create/Update &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2013/02/20/shoulda-matchers-model-extras/" title="Next Post: Shoulda Matcher Model Extras">Shoulda Matcher Model Extras &raquo;</a>
       
     </p>
   </footer>
@@ -300,8 +358,8 @@ end
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://nomethoderror.com//blog/2014/02/26/simple-rails-form-honeypot/';
-        var disqus_url = 'http://nomethoderror.com//blog/2014/02/26/simple-rails-form-honeypot/';
+        var disqus_identifier = 'http://nomethoderror.com//blog/2011/10/02/using-god-gem-to-monitor-mysql/';
+        var disqus_url = 'http://nomethoderror.com//blog/2011/10/02/using-god-gem-to-monitor-mysql/';
         var disqus_script = 'embed.js';
       
     (function () {
