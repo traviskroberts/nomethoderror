@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: routing | NoMethodError]]></title>
+  <link href="http://nomethoderror.com//blog/categories/routing/atom.xml" rel="self"/>
+  <link href="http://nomethoderror.com//"/>
+  <updated>2015-05-30T13:15:52-05:00</updated>
+  <id>http://nomethoderror.com//</id>
+  <author>
+    <name><![CDATA[Travis Roberts]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Using Wildcard Domains with Rails]]></title>
+    <link href="http://nomethoderror.com//blog/2011/09/13/using-wildcard-domains-with-rails/"/>
+    <updated>2011-09-13T12:00:00-05:00</updated>
+    <id>http://nomethoderror.com//blog/2011/09/13/using-wildcard-domains-with-rails</id>
+    <content type="html"><![CDATA[<p>Working on a recent project, I needed to allow users to set custom domains to point to their account pages on my server. They would set their domain when they registered, then set an A Record with their DNS to point to my server. The only problem was, I didn&rsquo;t know how to get Rails to do this.</p>
+
+<p>The domain is already saved in the database, but I needed to tell the router to look for any incoming requests to a domain that doesn&rsquo;t match my primary domain (in this example, we&rsquo;ll say my primary domain is example.com). Thanks to Rails 3, I could just add a routing constraint (which can take a class as argument), like so</p>
+
+<p><div><script src='https://gist.github.com/739001cc5a3274f3da03.js?file=routes.rb'></script>
+<noscript><pre><code>MyApp::Application.routes.draw do
+
+  # domain routes (THIS IS THE IMPORTANT PART)
+  constraints(Domain) do
+    match &#39;/&#39; =&gt; &#39;user#show&#39;, :as =&gt; :user_domain
+
+    resources :tasks
+    resources :projects
+
+    # any other routes that are domain-specific
+  end
+
+  # this needs to be below the &quot;domain&quot; section
+  root :to =&gt; &#39;site#index&#39;
+
+end</code></pre></noscript></div>
+</p>
+
+<p>Notice that the root path is below the domain routes. This is important because it will get triggered <em>before</em> the domain routes otherwise (because routes are first come, first served). With these routes in place, it&rsquo;s as easy as finding the user by domain when we get a request.</p>
+
+<p>We added the Domain class as a constraints argument, now we need to add that file. You can add the following <code>domain.rb</code> to your lib folder and make sure it&rsquo;s getting loaded on application boot.</p>
+
+<p><div><script src='https://gist.github.com/739001cc5a3274f3da03.js?file=domain.rb'></script>
+<noscript><pre><code>class Domain
+  def self.matches?(request)
+    request.domain.present? &amp;&amp; request.domain != &#39;example.com&#39;
+  end
+end</code></pre></noscript></div>
+</p>
+
+<p>It&rsquo;s as easy as that. We just check to make sure the domain is present and that it doesn&rsquo;t match our primary domain. This constraint will match <em>any</em> domain other than our primary domain.</p>
+
+<p>As for server configuration, you have to tell your server to accept all incoming requests, regardless of domain. Below is a sample Apache virtualhost to accomplish this. Notice that we don&rsquo;t specify a <code>ServerName</code> or <code>ServerAlias</code>, we want it to match everything.</p>
+
+<p><div><script src='https://gist.github.com/739001cc5a3274f3da03.js?file=vhost.conf'></script>
+<noscript><pre><code>&lt;VirtualHost *:80&gt;
+  DocumentRoot /path/to/my_app/public
+
+  &lt;Directory /path/to/my_app/public&gt;
+    Options FollowSymLinks
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+  &lt;/Directory&gt;
+&lt;/VirtualHost&gt;</code></pre></noscript></div>
+</p>
+
+<p><strong>IMPORTANT</strong>: You need to ensure that this virtualhost entry is loaded <em>last</em>. If you have any other virtualhosts that specify a <code>ServerName</code>, then they need to be loaded before this one. We&rsquo;re using this entry as a catch-all to route to our rails app. If you have all of your virtualhosts in one file, just put this entry last. If each entry is in its own file, just make sure this file is loaded last (you might add a zzz_ to the start of the filename to make sure).</p>
+]]></content>
+  </entry>
+  
+</feed>

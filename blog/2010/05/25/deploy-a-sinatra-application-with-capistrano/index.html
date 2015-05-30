@@ -5,11 +5,14 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Track Backbone.js Page Views with Google Analytics - NoMethodError</title>
+  <title>Deploy a Sinatra Application with Capistrano - NoMethodError</title>
   <meta name="author" content="Travis Roberts">
 
   
-  <meta name="description" content="Google Analytics tracks page views based on evaluating the tracking code on page load. Backbone.js makes this difficult because the page never &hellip;">
+  <meta name="description" content="Step 0: Vendor the sinatra gem (optional). mkdir vendor
+cd vendor
+gem unpack sinatra
+mv sinatra-* sinatra Step 1: Create a config.ru Rack file in &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +21,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://nomethoderror.com//blog/2013/11/19/track-backbone-dot-js-page-views-with-google-analytics/">
+  <link rel="canonical" href="http://nomethoderror.com//blog/2010/05/25/deploy-a-sinatra-application-with-capistrano/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -92,7 +95,7 @@
   
   <header>
     
-      <h1 class="entry-title">Track Backbone.js Page Views With Google Analytics</h1>
+      <h1 class="entry-title">Deploy a Sinatra Application With Capistrano</h1>
     
     
       <p class="meta">
@@ -108,75 +111,98 @@
   
 
 
-<time datetime="2013-11-19T19:42:00-06:00" pubdate data-updated="true">Nov 19<span>th</span>, 2013</time>
+<time datetime="2010-05-25T12:00:00-05:00" pubdate data-updated="true">May 25<span>th</span>, 2010</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Google Analytics tracks page views based on evaluating the tracking code on page load. Backbone.js makes this difficult because the page never reloads. Fortunately, it&rsquo;s super easy to add a function to the Backbone router to manually track each route.</p>
+<div class="entry-content"><h3>Step 0: Vendor the sinatra gem (optional).</h3>
 
-<h2>Newer Analytics Code</h2>
-
-<p>If your tracking code looks like below, then you have the newer Analytics tracking code that uses the <code>ga</code> function instead of the <code>_gaq</code> array.</p>
-
-<div><script src='https://gist.github.com/9d05cb3d9c6d90408325.js?file=analytics_new.js'></script>
-<noscript><pre><code>(function(i,s,o,g,r,a,m){i[&#39;GoogleAnalyticsObject&#39;]=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,&#39;script&#39;,&#39;//www.google-analytics.com/analytics.js&#39;,&#39;ga&#39;);
-
-ga(&#39;create&#39;, &#39;UA-0000000-1&#39;, &#39;mysite.com&#39;);
-ga(&#39;send&#39;, &#39;pageview&#39;);</code></pre></noscript></div>
+<div><script src='https://gist.github.com/667a83dbbf9a883f02ca.js?file=vendor.sh'></script>
+<noscript><pre><code>mkdir vendor
+cd vendor
+gem unpack sinatra
+mv sinatra-* sinatra</code></pre></noscript></div>
 
 
-<p>Add the following code to your router:</p>
+<h3>Step 1: Create a <kbd>config.ru</kbd> Rack file in your project&rsquo;s root directory.</h3>
 
-<div><script src='https://gist.github.com/9d05cb3d9c6d90408325.js?file=router_new.js'></script>
-<noscript><pre><code>initialize: function() {
-  this.bind(&#39;route&#39;, this._pageView);
-},
+<div><script src='https://gist.github.com/667a83dbbf9a883f02ca.js?file=config.ru'></script>
+<noscript><pre><code>require &#39;rubygems&#39;
+require &#39;vendor/sinatra/lib/sinatra.rb&#39;
 
-_pageView: function() {
-  var path = Backbone.history.getFragment();
-  ga(&#39;send&#39;, &#39;pageview&#39;, {page: path});
-}</code></pre></noscript></div>
+set :public, File.expand_path(File.dirname(__FILE__) + &#39;/public&#39;) # Include your public folder
+set :views, File.expand_path(File.dirname(__FILE__) + &#39;/views&#39;)  # Include the views
 
+set :environment, :production
 
-<h2>Old Analytics Code</h2>
+disable :run, :reload
 
-<p>If your tracking code looks like this:</p>
-
-<div><script src='https://gist.github.com/9d05cb3d9c6d90408325.js?file=analytics_old.js'></script>
-<noscript><pre><code>var _gaq = _gaq || [];
-_gaq.push([&#39;_setAccount&#39;, &#39;UA-0000000-1&#39;]);
-_gaq.push([&#39;_trackPageview&#39;]);
-
-(function() {
-  var ga = document.createElement(&#39;script&#39;);
-      ga.type = &#39;text/javascript&#39;;
-      ga.async = true;
-      ga.src = (&#39;https:&#39; == document.location.protocol ? &#39;https://ssl&#39; : &#39;http://www&#39;) + &#39;.google-analytics.com/ga.js&#39;;
-  var s = document.getElementsByTagName(&#39;script&#39;)[0];
-      s.parentNode.insertBefore(ga, s);
-})();</code></pre></noscript></div>
+require &#39;app_file&#39; # replace this with your sinatra app file
+run Sinatra::Application</code></pre></noscript></div>
 
 
-<p>Add the following code to your router:</p>
+<h3>Step 2: Create a Capistrano deploy file.</h3>
 
-<div><script src='https://gist.github.com/9d05cb3d9c6d90408325.js?file=router_old.js'></script>
-<noscript><pre><code>initialize: function() {
-  this.bind(&#39;route&#39;, this._pageView);
-},
+<p>This file should live at <kbd>config/deploy.rb</kbd>.</p>
 
-_pageView: function() {
-  var path = Backbone.history.getFragment();
-  _gaq.push([&#39;_trackPageview&#39;, &quot;/&quot; + path])
-}</code></pre></noscript></div>
+<div><script src='https://gist.github.com/667a83dbbf9a883f02ca.js?file=deploy.rb'></script>
+<noscript><pre><code>set :domain, &quot;yourdomain.com&quot;
+set :application, &quot;app_name&quot;
+set :deploy_to, &quot;/var/www/apps/#{domain}&quot;
+
+set :user, &quot;your_deploy_user&quot;
+set :use_sudo, false
+
+set :scm, :git
+set :repository,  &quot;git@github.com:you/application.git&quot;
+set :branch, &#39;master&#39;
+set :git_shallow_clone, 1
+
+role :web, domain
+role :app, domain
+role :db,  domain, :primary =&gt; true
+
+set :deploy_via, :remote_cache
+
+namespace :deploy do
+  task :start do ; end
+  task :stop do ; end
+  # Assumes you are using Passenger
+  task :restart, :roles =&gt; :app, :except =&gt; { :no_release =&gt; true } do
+    run &quot;#{try_sudo} touch #{File.join(current_path,&#39;tmp&#39;,&#39;restart.txt&#39;)}&quot;
+  end
+
+  task :finalize_update, :except =&gt; { :no_release =&gt; true } do
+    run &quot;chmod -R g+w #{latest_release}&quot; if fetch(:group_writable, true)
+
+    # mkdir -p is making sure that the directories are there for some SCM&#39;s that don&#39;t save empty folders
+    run &lt;&lt;-CMD
+      rm -rf #{latest_release}/log &amp;&amp;
+      mkdir -p #{latest_release}/public &amp;&amp;
+      mkdir -p #{latest_release}/tmp &amp;&amp;
+      ln -s #{shared_path}/log #{latest_release}/log
+    CMD
+
+    if fetch(:normalize_asset_timestamps, true)
+      stamp = Time.now.utc.strftime(&quot;%Y%m%d%H%M.%S&quot;)
+      asset_paths = %w(images css).map { |p| &quot;#{latest_release}/public/#{p}&quot; }.join(&quot; &quot;)
+      run &quot;find #{asset_paths} -exec touch -t #{stamp} {} &#39;;&#39;; true&quot;, :env =&gt; { &quot;TZ&quot; =&gt; &quot;UTC&quot; }
+    end
+  end
+end</code></pre></noscript></div>
 
 
+<h3>Step 3: Deploy the app.</h3>
 
+<div><script src='https://gist.github.com/667a83dbbf9a883f02ca.js?file=deploy.sh'></script>
+<noscript><pre><code>cap deploy:setup
+cap deploy</code></pre></noscript></div>
+
+
+<h3>Step 4: Get a beer, you&rsquo;re done!</h3>
 </div>
 
 
@@ -199,12 +225,12 @@ _pageView: function() {
   
 
 
-<time datetime="2013-11-19T19:42:00-06:00" pubdate data-updated="true">Nov 19<span>th</span>, 2013</time>
+<time datetime="2010-05-25T12:00:00-05:00" pubdate data-updated="true">May 25<span>th</span>, 2010</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/backbone/'>backbone</a>
+    <a class='category' href='/blog/categories/capistrano/'>capistrano</a>, <a class='category' href='/blog/categories/sinatra/'>sinatra</a>
   
 </span>
 
@@ -213,7 +239,7 @@ _pageView: function() {
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://nomethoderror.com//blog/2013/11/19/track-backbone-dot-js-page-views-with-google-analytics/" data-via="travisroberts" data-counturl="http://nomethoderror.com//blog/2013/11/19/track-backbone-dot-js-page-views-with-google-analytics/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://nomethoderror.com//blog/2010/05/25/deploy-a-sinatra-application-with-capistrano/" data-via="travisroberts" data-counturl="http://nomethoderror.com//blog/2010/05/25/deploy-a-sinatra-application-with-capistrano/" >Tweet</a>
   
   
   
@@ -222,10 +248,8 @@ _pageView: function() {
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2013/11/17/using-phonegap-filetransfer-to-download-multiple-files-to-the-device/" title="Previous Post: Using PhoneGap FileTransfer to Download Multiple Files to the Device">&laquo; Using PhoneGap FileTransfer to Download Multiple Files to the Device</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2014/02/05/activerecord-random-ordering-with-pagination/" title="Next Post: ActiveRecord Random Ordering with Pagination">ActiveRecord Random Ordering with Pagination &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2011/09/13/using-wildcard-domains-with-rails/" title="Next Post: Using Wildcard Domains with Rails">Using Wildcard Domains with Rails &raquo;</a>
       
     </p>
   </footer>
@@ -295,8 +319,8 @@ _pageView: function() {
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://nomethoderror.com//blog/2013/11/19/track-backbone-dot-js-page-views-with-google-analytics/';
-        var disqus_url = 'http://nomethoderror.com//blog/2013/11/19/track-backbone-dot-js-page-views-with-google-analytics/';
+        var disqus_identifier = 'http://nomethoderror.com//blog/2010/05/25/deploy-a-sinatra-application-with-capistrano/';
+        var disqus_url = 'http://nomethoderror.com//blog/2010/05/25/deploy-a-sinatra-application-with-capistrano/';
         var disqus_script = 'embed.js';
       
     (function () {

@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Track Backbone.js Page Views with Google Analytics - NoMethodError</title>
+  <title>Using Wildcard Domains with Rails - NoMethodError</title>
   <meta name="author" content="Travis Roberts">
 
   
-  <meta name="description" content="Google Analytics tracks page views based on evaluating the tracking code on page load. Backbone.js makes this difficult because the page never &hellip;">
+  <meta name="description" content="Working on a recent project, I needed to allow users to set custom domains to point to their account pages on my server. They would set their domain &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://nomethoderror.com//blog/2013/11/19/track-backbone-dot-js-page-views-with-google-analytics/">
+  <link rel="canonical" href="http://nomethoderror.com//blog/2011/09/13/using-wildcard-domains-with-rails/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -92,7 +92,7 @@
   
   <header>
     
-      <h1 class="entry-title">Track Backbone.js Page Views With Google Analytics</h1>
+      <h1 class="entry-title">Using Wildcard Domains With Rails</h1>
     
     
       <p class="meta">
@@ -108,75 +108,66 @@
   
 
 
-<time datetime="2013-11-19T19:42:00-06:00" pubdate data-updated="true">Nov 19<span>th</span>, 2013</time>
+<time datetime="2011-09-13T12:00:00-05:00" pubdate data-updated="true">Sep 13<span>th</span>, 2011</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Google Analytics tracks page views based on evaluating the tracking code on page load. Backbone.js makes this difficult because the page never reloads. Fortunately, it&rsquo;s super easy to add a function to the Backbone router to manually track each route.</p>
+<div class="entry-content"><p>Working on a recent project, I needed to allow users to set custom domains to point to their account pages on my server. They would set their domain when they registered, then set an A Record with their DNS to point to my server. The only problem was, I didn&rsquo;t know how to get Rails to do this.</p>
 
-<h2>Newer Analytics Code</h2>
+<p>The domain is already saved in the database, but I needed to tell the router to look for any incoming requests to a domain that doesn&rsquo;t match my primary domain (in this example, we&rsquo;ll say my primary domain is example.com). Thanks to Rails 3, I could just add a routing constraint (which can take a class as argument), like so</p>
 
-<p>If your tracking code looks like below, then you have the newer Analytics tracking code that uses the <code>ga</code> function instead of the <code>_gaq</code> array.</p>
+<div><script src='https://gist.github.com/739001cc5a3274f3da03.js?file=routes.rb'></script>
+<noscript><pre><code>MyApp::Application.routes.draw do
 
-<div><script src='https://gist.github.com/9d05cb3d9c6d90408325.js?file=analytics_new.js'></script>
-<noscript><pre><code>(function(i,s,o,g,r,a,m){i[&#39;GoogleAnalyticsObject&#39;]=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,&#39;script&#39;,&#39;//www.google-analytics.com/analytics.js&#39;,&#39;ga&#39;);
+  # domain routes (THIS IS THE IMPORTANT PART)
+  constraints(Domain) do
+    match &#39;/&#39; =&gt; &#39;user#show&#39;, :as =&gt; :user_domain
 
-ga(&#39;create&#39;, &#39;UA-0000000-1&#39;, &#39;mysite.com&#39;);
-ga(&#39;send&#39;, &#39;pageview&#39;);</code></pre></noscript></div>
+    resources :tasks
+    resources :projects
 
+    # any other routes that are domain-specific
+  end
 
-<p>Add the following code to your router:</p>
+  # this needs to be below the &quot;domain&quot; section
+  root :to =&gt; &#39;site#index&#39;
 
-<div><script src='https://gist.github.com/9d05cb3d9c6d90408325.js?file=router_new.js'></script>
-<noscript><pre><code>initialize: function() {
-  this.bind(&#39;route&#39;, this._pageView);
-},
-
-_pageView: function() {
-  var path = Backbone.history.getFragment();
-  ga(&#39;send&#39;, &#39;pageview&#39;, {page: path});
-}</code></pre></noscript></div>
+end</code></pre></noscript></div>
 
 
-<h2>Old Analytics Code</h2>
+<p>Notice that the root path is below the domain routes. This is important because it will get triggered <em>before</em> the domain routes otherwise (because routes are first come, first served). With these routes in place, it&rsquo;s as easy as finding the user by domain when we get a request.</p>
 
-<p>If your tracking code looks like this:</p>
+<p>We added the Domain class as a constraints argument, now we need to add that file. You can add the following <code>domain.rb</code> to your lib folder and make sure it&rsquo;s getting loaded on application boot.</p>
 
-<div><script src='https://gist.github.com/9d05cb3d9c6d90408325.js?file=analytics_old.js'></script>
-<noscript><pre><code>var _gaq = _gaq || [];
-_gaq.push([&#39;_setAccount&#39;, &#39;UA-0000000-1&#39;]);
-_gaq.push([&#39;_trackPageview&#39;]);
-
-(function() {
-  var ga = document.createElement(&#39;script&#39;);
-      ga.type = &#39;text/javascript&#39;;
-      ga.async = true;
-      ga.src = (&#39;https:&#39; == document.location.protocol ? &#39;https://ssl&#39; : &#39;http://www&#39;) + &#39;.google-analytics.com/ga.js&#39;;
-  var s = document.getElementsByTagName(&#39;script&#39;)[0];
-      s.parentNode.insertBefore(ga, s);
-})();</code></pre></noscript></div>
+<div><script src='https://gist.github.com/739001cc5a3274f3da03.js?file=domain.rb'></script>
+<noscript><pre><code>class Domain
+  def self.matches?(request)
+    request.domain.present? &amp;&amp; request.domain != &#39;example.com&#39;
+  end
+end</code></pre></noscript></div>
 
 
-<p>Add the following code to your router:</p>
+<p>It&rsquo;s as easy as that. We just check to make sure the domain is present and that it doesn&rsquo;t match our primary domain. This constraint will match <em>any</em> domain other than our primary domain.</p>
 
-<div><script src='https://gist.github.com/9d05cb3d9c6d90408325.js?file=router_old.js'></script>
-<noscript><pre><code>initialize: function() {
-  this.bind(&#39;route&#39;, this._pageView);
-},
+<p>As for server configuration, you have to tell your server to accept all incoming requests, regardless of domain. Below is a sample Apache virtualhost to accomplish this. Notice that we don&rsquo;t specify a <code>ServerName</code> or <code>ServerAlias</code>, we want it to match everything.</p>
 
-_pageView: function() {
-  var path = Backbone.history.getFragment();
-  _gaq.push([&#39;_trackPageview&#39;, &quot;/&quot; + path])
-}</code></pre></noscript></div>
+<div><script src='https://gist.github.com/739001cc5a3274f3da03.js?file=vhost.conf'></script>
+<noscript><pre><code>&lt;VirtualHost *:80&gt;
+  DocumentRoot /path/to/my_app/public
+
+  &lt;Directory /path/to/my_app/public&gt;
+    Options FollowSymLinks
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+  &lt;/Directory&gt;
+&lt;/VirtualHost&gt;</code></pre></noscript></div>
 
 
-
+<p><strong>IMPORTANT</strong>: You need to ensure that this virtualhost entry is loaded <em>last</em>. If you have any other virtualhosts that specify a <code>ServerName</code>, then they need to be loaded before this one. We&rsquo;re using this entry as a catch-all to route to our rails app. If you have all of your virtualhosts in one file, just put this entry last. If each entry is in its own file, just make sure this file is loaded last (you might add a zzz_ to the start of the filename to make sure).</p>
 </div>
 
 
@@ -199,12 +190,12 @@ _pageView: function() {
   
 
 
-<time datetime="2013-11-19T19:42:00-06:00" pubdate data-updated="true">Nov 19<span>th</span>, 2013</time>
+<time datetime="2011-09-13T12:00:00-05:00" pubdate data-updated="true">Sep 13<span>th</span>, 2011</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/backbone/'>backbone</a>
+    <a class='category' href='/blog/categories/rails/'>rails</a>, <a class='category' href='/blog/categories/routing/'>routing</a>
   
 </span>
 
@@ -213,7 +204,7 @@ _pageView: function() {
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://nomethoderror.com//blog/2013/11/19/track-backbone-dot-js-page-views-with-google-analytics/" data-via="travisroberts" data-counturl="http://nomethoderror.com//blog/2013/11/19/track-backbone-dot-js-page-views-with-google-analytics/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://nomethoderror.com//blog/2011/09/13/using-wildcard-domains-with-rails/" data-via="travisroberts" data-counturl="http://nomethoderror.com//blog/2011/09/13/using-wildcard-domains-with-rails/" >Tweet</a>
   
   
   
@@ -222,10 +213,10 @@ _pageView: function() {
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2013/11/17/using-phonegap-filetransfer-to-download-multiple-files-to-the-device/" title="Previous Post: Using PhoneGap FileTransfer to Download Multiple Files to the Device">&laquo; Using PhoneGap FileTransfer to Download Multiple Files to the Device</a>
+        <a class="basic-alignment left" href="/blog/2010/05/25/deploy-a-sinatra-application-with-capistrano/" title="Previous Post: Deploy a Sinatra Application with Capistrano">&laquo; Deploy a Sinatra Application with Capistrano</a>
       
       
-        <a class="basic-alignment right" href="/blog/2014/02/05/activerecord-random-ordering-with-pagination/" title="Next Post: ActiveRecord Random Ordering with Pagination">ActiveRecord Random Ordering with Pagination &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2011/10/02/using-god-gem-to-monitor-mysql/" title="Next Post: Using God Gem to Monitor mySQL">Using God Gem to Monitor mySQL &raquo;</a>
       
     </p>
   </footer>
@@ -295,8 +286,8 @@ _pageView: function() {
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://nomethoderror.com//blog/2013/11/19/track-backbone-dot-js-page-views-with-google-analytics/';
-        var disqus_url = 'http://nomethoderror.com//blog/2013/11/19/track-backbone-dot-js-page-views-with-google-analytics/';
+        var disqus_identifier = 'http://nomethoderror.com//blog/2011/09/13/using-wildcard-domains-with-rails/';
+        var disqus_url = 'http://nomethoderror.com//blog/2011/09/13/using-wildcard-domains-with-rails/';
         var disqus_script = 'embed.js';
       
     (function () {

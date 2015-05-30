@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Track Backbone.js Page Views with Google Analytics - NoMethodError</title>
+  <title>Category: routing - NoMethodError</title>
   <meta name="author" content="Travis Roberts">
 
   
-  <meta name="description" content="Google Analytics tracks page views based on evaluating the tracking code on page load. Backbone.js makes this difficult because the page never &hellip;">
+  <meta name="description" content="Category: routing">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://nomethoderror.com//blog/2013/11/19/track-backbone-dot-js-page-views-with-google-analytics/">
+  <link rel="canonical" href="http://nomethoderror.com/blog/categories/routing/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -88,154 +88,36 @@
     <div id="main">
       <div id="content">
         <div>
-<article class="hentry" role="article">
+<article role="article">
   
   <header>
-    
-      <h1 class="entry-title">Track Backbone.js Page Views With Google Analytics</h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-19T19:42:00-06:00" pubdate data-updated="true">Nov 19<span>th</span>, 2013</time>
-        
-      </p>
+    <h1 class="entry-title">Category: Routing</h1>
     
   </header>
-
-
-<div class="entry-content"><p>Google Analytics tracks page views based on evaluating the tracking code on page load. Backbone.js makes this difficult because the page never reloads. Fortunately, it&rsquo;s super easy to add a function to the Backbone router to manually track each route.</p>
-
-<h2>Newer Analytics Code</h2>
-
-<p>If your tracking code looks like below, then you have the newer Analytics tracking code that uses the <code>ga</code> function instead of the <code>_gaq</code> array.</p>
-
-<div><script src='https://gist.github.com/9d05cb3d9c6d90408325.js?file=analytics_new.js'></script>
-<noscript><pre><code>(function(i,s,o,g,r,a,m){i[&#39;GoogleAnalyticsObject&#39;]=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,&#39;script&#39;,&#39;//www.google-analytics.com/analytics.js&#39;,&#39;ga&#39;);
-
-ga(&#39;create&#39;, &#39;UA-0000000-1&#39;, &#39;mysite.com&#39;);
-ga(&#39;send&#39;, &#39;pageview&#39;);</code></pre></noscript></div>
-
-
-<p>Add the following code to your router:</p>
-
-<div><script src='https://gist.github.com/9d05cb3d9c6d90408325.js?file=router_new.js'></script>
-<noscript><pre><code>initialize: function() {
-  this.bind(&#39;route&#39;, this._pageView);
-},
-
-_pageView: function() {
-  var path = Backbone.history.getFragment();
-  ga(&#39;send&#39;, &#39;pageview&#39;, {page: path});
-}</code></pre></noscript></div>
-
-
-<h2>Old Analytics Code</h2>
-
-<p>If your tracking code looks like this:</p>
-
-<div><script src='https://gist.github.com/9d05cb3d9c6d90408325.js?file=analytics_old.js'></script>
-<noscript><pre><code>var _gaq = _gaq || [];
-_gaq.push([&#39;_setAccount&#39;, &#39;UA-0000000-1&#39;]);
-_gaq.push([&#39;_trackPageview&#39;]);
-
-(function() {
-  var ga = document.createElement(&#39;script&#39;);
-      ga.type = &#39;text/javascript&#39;;
-      ga.async = true;
-      ga.src = (&#39;https:&#39; == document.location.protocol ? &#39;https://ssl&#39; : &#39;http://www&#39;) + &#39;.google-analytics.com/ga.js&#39;;
-  var s = document.getElementsByTagName(&#39;script&#39;)[0];
-      s.parentNode.insertBefore(ga, s);
-})();</code></pre></noscript></div>
-
-
-<p>Add the following code to your router:</p>
-
-<div><script src='https://gist.github.com/9d05cb3d9c6d90408325.js?file=router_old.js'></script>
-<noscript><pre><code>initialize: function() {
-  this.bind(&#39;route&#39;, this._pageView);
-},
-
-_pageView: function() {
-  var path = Backbone.history.getFragment();
-  _gaq.push([&#39;_trackPageview&#39;, &quot;/&quot; + path])
-}</code></pre></noscript></div>
-
-
-
-</div>
-
-
-  <footer>
-    <p class="meta">
-      
   
-
-<span class="byline author vcard">Posted by <span class="fn">Travis Roberts</span></span>
-
-      
-
-
-
-
-
+  <div id="blog-archives" class="category">
 
 
 
   
+  <h2>2011</h2>
+
+<article>
+  
+<h1><a href="/blog/2011/09/13/using-wildcard-domains-with-rails/">Using Wildcard Domains with Rails</a></h1>
+<time datetime="2011-09-13T12:00:00-05:00" pubdate><span class='month'>Sep</span> <span class='day'>13</span> <span class='year'>2011</span></time>
+
+<footer>
+  <span class="categories">posted in <a class='category' href='/blog/categories/rails/'>rails</a>, <a class='category' href='/blog/categories/routing/'>routing</a></span>
+</footer>
 
 
-<time datetime="2013-11-19T19:42:00-06:00" pubdate data-updated="true">Nov 19<span>th</span>, 2013</time>
-      
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/backbone/'>backbone</a>
-  
-</span>
-
-
-    </p>
-    
-      <div class="sharing">
-  
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://nomethoderror.com//blog/2013/11/19/track-backbone-dot-js-page-views-with-google-analytics/" data-via="travisroberts" data-counturl="http://nomethoderror.com//blog/2013/11/19/track-backbone-dot-js-page-views-with-google-analytics/" >Tweet</a>
-  
-  
-  
-</div>
-
-    
-    <p class="meta">
-      
-        <a class="basic-alignment left" href="/blog/2013/11/17/using-phonegap-filetransfer-to-download-multiple-files-to-the-device/" title="Previous Post: Using PhoneGap FileTransfer to Download Multiple Files to the Device">&laquo; Using PhoneGap FileTransfer to Download Multiple Files to the Device</a>
-      
-      
-        <a class="basic-alignment right" href="/blog/2014/02/05/activerecord-random-ordering-with-pagination/" title="Next Post: ActiveRecord Random Ordering with Pagination">ActiveRecord Random Ordering with Pagination &raquo;</a>
-      
-    </p>
-  </footer>
 </article>
 
-  <section>
-    <h1>Comments</h1>
-    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
-  </section>
+
+  
+</article>
 
 </div>
 
@@ -294,10 +176,7 @@ _pageView: function() {
       var disqus_shortname = 'travisr';
       
         
-        // var disqus_developer = 1;
-        var disqus_identifier = 'http://nomethoderror.com//blog/2013/11/19/track-backbone-dot-js-page-views-with-google-analytics/';
-        var disqus_url = 'http://nomethoderror.com//blog/2013/11/19/track-backbone-dot-js-page-views-with-google-analytics/';
-        var disqus_script = 'embed.js';
+        var disqus_script = 'count.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

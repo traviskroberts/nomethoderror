@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: sinatra | NoMethodError]]></title>
+  <link href="http://nomethoderror.com//blog/categories/sinatra/atom.xml" rel="self"/>
+  <link href="http://nomethoderror.com//"/>
+  <updated>2015-05-30T13:15:52-05:00</updated>
+  <id>http://nomethoderror.com//</id>
+  <author>
+    <name><![CDATA[Travis Roberts]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Deploy a Sinatra Application with Capistrano]]></title>
+    <link href="http://nomethoderror.com//blog/2010/05/25/deploy-a-sinatra-application-with-capistrano/"/>
+    <updated>2010-05-25T12:00:00-05:00</updated>
+    <id>http://nomethoderror.com//blog/2010/05/25/deploy-a-sinatra-application-with-capistrano</id>
+    <content type="html"><![CDATA[<h3>Step 0: Vendor the sinatra gem (optional).</h3>
+
+<p><div><script src='https://gist.github.com/667a83dbbf9a883f02ca.js?file=vendor.sh'></script>
+<noscript><pre><code>mkdir vendor
+cd vendor
+gem unpack sinatra
+mv sinatra-* sinatra</code></pre></noscript></div>
+</p>
+
+<h3>Step 1: Create a <kbd>config.ru</kbd> Rack file in your project&rsquo;s root directory.</h3>
+
+<p><div><script src='https://gist.github.com/667a83dbbf9a883f02ca.js?file=config.ru'></script>
+<noscript><pre><code>require &#39;rubygems&#39;
+require &#39;vendor/sinatra/lib/sinatra.rb&#39;
+
+set :public, File.expand_path(File.dirname(__FILE__) + &#39;/public&#39;) # Include your public folder
+set :views, File.expand_path(File.dirname(__FILE__) + &#39;/views&#39;)  # Include the views
+
+set :environment, :production
+
+disable :run, :reload
+
+require &#39;app_file&#39; # replace this with your sinatra app file
+run Sinatra::Application</code></pre></noscript></div>
+</p>
+
+<h3>Step 2: Create a Capistrano deploy file.</h3>
+
+<p>This file should live at <kbd>config/deploy.rb</kbd>.</p>
+
+<p><div><script src='https://gist.github.com/667a83dbbf9a883f02ca.js?file=deploy.rb'></script>
+<noscript><pre><code>set :domain, &quot;yourdomain.com&quot;
+set :application, &quot;app_name&quot;
+set :deploy_to, &quot;/var/www/apps/#{domain}&quot;
+
+set :user, &quot;your_deploy_user&quot;
+set :use_sudo, false
+
+set :scm, :git
+set :repository,  &quot;git@github.com:you/application.git&quot;
+set :branch, &#39;master&#39;
+set :git_shallow_clone, 1
+
+role :web, domain
+role :app, domain
+role :db,  domain, :primary =&gt; true
+
+set :deploy_via, :remote_cache
+
+namespace :deploy do
+  task :start do ; end
+  task :stop do ; end
+  # Assumes you are using Passenger
+  task :restart, :roles =&gt; :app, :except =&gt; { :no_release =&gt; true } do
+    run &quot;#{try_sudo} touch #{File.join(current_path,&#39;tmp&#39;,&#39;restart.txt&#39;)}&quot;
+  end
+
+  task :finalize_update, :except =&gt; { :no_release =&gt; true } do
+    run &quot;chmod -R g+w #{latest_release}&quot; if fetch(:group_writable, true)
+
+    # mkdir -p is making sure that the directories are there for some SCM&#39;s that don&#39;t save empty folders
+    run &lt;&lt;-CMD
+      rm -rf #{latest_release}/log &amp;&amp;
+      mkdir -p #{latest_release}/public &amp;&amp;
+      mkdir -p #{latest_release}/tmp &amp;&amp;
+      ln -s #{shared_path}/log #{latest_release}/log
+    CMD
+
+    if fetch(:normalize_asset_timestamps, true)
+      stamp = Time.now.utc.strftime(&quot;%Y%m%d%H%M.%S&quot;)
+      asset_paths = %w(images css).map { |p| &quot;#{latest_release}/public/#{p}&quot; }.join(&quot; &quot;)
+      run &quot;find #{asset_paths} -exec touch -t #{stamp} {} &#39;;&#39;; true&quot;, :env =&gt; { &quot;TZ&quot; =&gt; &quot;UTC&quot; }
+    end
+  end
+end</code></pre></noscript></div>
+</p>
+
+<h3>Step 3: Deploy the app.</h3>
+
+<p><div><script src='https://gist.github.com/667a83dbbf9a883f02ca.js?file=deploy.sh'></script>
+<noscript><pre><code>cap deploy:setup
+cap deploy</code></pre></noscript></div>
+</p>
+
+<h3>Step 4: Get a beer, you&rsquo;re done!</h3>
+]]></content>
+  </entry>
+  
+</feed>

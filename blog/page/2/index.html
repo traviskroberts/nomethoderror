@@ -1,0 +1,394 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>NoMethodError</title>
+  <meta name="author" content="Travis Roberts">
+
+  
+  <meta name="description" content="Working on a recent project, I needed to allow users to set custom domains to point to their account pages on my server. They would set their domain &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://nomethoderror.com//blog/page/2/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="NoMethodError" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=Arvo:400,400italic,700,700italic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=Merienda:700" rel="stylesheet" type="text/css">
+
+  
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-2032096-4', 'nomethoderror.com');
+    ga('send', 'pageview');
+
+    // OLD CODE
+    // var _gaq = _gaq || [];
+    // _gaq.push(['_setAccount', 'UA-2032096-4']);
+    // _gaq.push(['_trackPageview']);
+
+    // (function() {
+    //   var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    //   ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    //   var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    // })();
+  </script>
+
+
+</head>
+
+<body>
+  <div id="navigation">
+    <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:nomethoderror.com/" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  </div>
+  <header role="banner"><hgroup>
+  <h1><a href="/">NoMethodError</a></h1>
+  
+    <h2><span class="raise">raise</span> <span class="string">"a blog about rails, javascript, and other stuff"</span></h2>
+  
+</hgroup>
+
+</header>
+  <div id="body"  >
+    <div id="main">
+      <div id="content">
+        <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/09/13/using-wildcard-domains-with-rails/">Using Wildcard Domains With Rails</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-09-13T12:00:00-05:00" pubdate data-updated="true">Sep 13<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Working on a recent project, I needed to allow users to set custom domains to point to their account pages on my server. They would set their domain when they registered, then set an A Record with their DNS to point to my server. The only problem was, I didn&rsquo;t know how to get Rails to do this.</p>
+
+<p>The domain is already saved in the database, but I needed to tell the router to look for any incoming requests to a domain that doesn&rsquo;t match my primary domain (in this example, we&rsquo;ll say my primary domain is example.com). Thanks to Rails 3, I could just add a routing constraint (which can take a class as argument), like so</p>
+
+<div><script src='https://gist.github.com/739001cc5a3274f3da03.js?file=routes.rb'></script>
+<noscript><pre><code>MyApp::Application.routes.draw do
+
+  # domain routes (THIS IS THE IMPORTANT PART)
+  constraints(Domain) do
+    match &#39;/&#39; =&gt; &#39;user#show&#39;, :as =&gt; :user_domain
+
+    resources :tasks
+    resources :projects
+
+    # any other routes that are domain-specific
+  end
+
+  # this needs to be below the &quot;domain&quot; section
+  root :to =&gt; &#39;site#index&#39;
+
+end</code></pre></noscript></div>
+
+
+<p>Notice that the root path is below the domain routes. This is important because it will get triggered <em>before</em> the domain routes otherwise (because routes are first come, first served). With these routes in place, it&rsquo;s as easy as finding the user by domain when we get a request.</p>
+
+<p>We added the Domain class as a constraints argument, now we need to add that file. You can add the following <code>domain.rb</code> to your lib folder and make sure it&rsquo;s getting loaded on application boot.</p>
+
+<div><script src='https://gist.github.com/739001cc5a3274f3da03.js?file=domain.rb'></script>
+<noscript><pre><code>class Domain
+  def self.matches?(request)
+    request.domain.present? &amp;&amp; request.domain != &#39;example.com&#39;
+  end
+end</code></pre></noscript></div>
+
+
+<p>It&rsquo;s as easy as that. We just check to make sure the domain is present and that it doesn&rsquo;t match our primary domain. This constraint will match <em>any</em> domain other than our primary domain.</p>
+
+<p>As for server configuration, you have to tell your server to accept all incoming requests, regardless of domain. Below is a sample Apache virtualhost to accomplish this. Notice that we don&rsquo;t specify a <code>ServerName</code> or <code>ServerAlias</code>, we want it to match everything.</p>
+
+<div><script src='https://gist.github.com/739001cc5a3274f3da03.js?file=vhost.conf'></script>
+<noscript><pre><code>&lt;VirtualHost *:80&gt;
+  DocumentRoot /path/to/my_app/public
+
+  &lt;Directory /path/to/my_app/public&gt;
+    Options FollowSymLinks
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+  &lt;/Directory&gt;
+&lt;/VirtualHost&gt;</code></pre></noscript></div>
+
+
+<p><strong>IMPORTANT</strong>: You need to ensure that this virtualhost entry is loaded <em>last</em>. If you have any other virtualhosts that specify a <code>ServerName</code>, then they need to be loaded before this one. We&rsquo;re using this entry as a catch-all to route to our rails app. If you have all of your virtualhosts in one file, just put this entry last. If each entry is in its own file, just make sure this file is loaded last (you might add a zzz_ to the start of the filename to make sure).</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/05/25/deploy-a-sinatra-application-with-capistrano/">Deploy a Sinatra Application With Capistrano</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-05-25T12:00:00-05:00" pubdate data-updated="true">May 25<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>Step 0: Vendor the sinatra gem (optional).</h3>
+
+<div><script src='https://gist.github.com/667a83dbbf9a883f02ca.js?file=vendor.sh'></script>
+<noscript><pre><code>mkdir vendor
+cd vendor
+gem unpack sinatra
+mv sinatra-* sinatra</code></pre></noscript></div>
+
+
+<h3>Step 1: Create a <kbd>config.ru</kbd> Rack file in your project&rsquo;s root directory.</h3>
+
+<div><script src='https://gist.github.com/667a83dbbf9a883f02ca.js?file=config.ru'></script>
+<noscript><pre><code>require &#39;rubygems&#39;
+require &#39;vendor/sinatra/lib/sinatra.rb&#39;
+
+set :public, File.expand_path(File.dirname(__FILE__) + &#39;/public&#39;) # Include your public folder
+set :views, File.expand_path(File.dirname(__FILE__) + &#39;/views&#39;)  # Include the views
+
+set :environment, :production
+
+disable :run, :reload
+
+require &#39;app_file&#39; # replace this with your sinatra app file
+run Sinatra::Application</code></pre></noscript></div>
+
+
+<h3>Step 2: Create a Capistrano deploy file.</h3>
+
+<p>This file should live at <kbd>config/deploy.rb</kbd>.</p>
+
+<div><script src='https://gist.github.com/667a83dbbf9a883f02ca.js?file=deploy.rb'></script>
+<noscript><pre><code>set :domain, &quot;yourdomain.com&quot;
+set :application, &quot;app_name&quot;
+set :deploy_to, &quot;/var/www/apps/#{domain}&quot;
+
+set :user, &quot;your_deploy_user&quot;
+set :use_sudo, false
+
+set :scm, :git
+set :repository,  &quot;git@github.com:you/application.git&quot;
+set :branch, &#39;master&#39;
+set :git_shallow_clone, 1
+
+role :web, domain
+role :app, domain
+role :db,  domain, :primary =&gt; true
+
+set :deploy_via, :remote_cache
+
+namespace :deploy do
+  task :start do ; end
+  task :stop do ; end
+  # Assumes you are using Passenger
+  task :restart, :roles =&gt; :app, :except =&gt; { :no_release =&gt; true } do
+    run &quot;#{try_sudo} touch #{File.join(current_path,&#39;tmp&#39;,&#39;restart.txt&#39;)}&quot;
+  end
+
+  task :finalize_update, :except =&gt; { :no_release =&gt; true } do
+    run &quot;chmod -R g+w #{latest_release}&quot; if fetch(:group_writable, true)
+
+    # mkdir -p is making sure that the directories are there for some SCM&#39;s that don&#39;t save empty folders
+    run &lt;&lt;-CMD
+      rm -rf #{latest_release}/log &amp;&amp;
+      mkdir -p #{latest_release}/public &amp;&amp;
+      mkdir -p #{latest_release}/tmp &amp;&amp;
+      ln -s #{shared_path}/log #{latest_release}/log
+    CMD
+
+    if fetch(:normalize_asset_timestamps, true)
+      stamp = Time.now.utc.strftime(&quot;%Y%m%d%H%M.%S&quot;)
+      asset_paths = %w(images css).map { |p| &quot;#{latest_release}/public/#{p}&quot; }.join(&quot; &quot;)
+      run &quot;find #{asset_paths} -exec touch -t #{stamp} {} &#39;;&#39;; true&quot;, :env =&gt; { &quot;TZ&quot; =&gt; &quot;UTC&quot; }
+    end
+  end
+end</code></pre></noscript></div>
+
+
+<h3>Step 3: Deploy the app.</h3>
+
+<div><script src='https://gist.github.com/667a83dbbf9a883f02ca.js?file=deploy.sh'></script>
+<noscript><pre><code>cap deploy:setup
+cap deploy</code></pre></noscript></div>
+
+
+<h3>Step 4: Get a beer, you&rsquo;re done!</h3>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/03/10/activeadmin-redirect-to-index-on-create-update/">ActiveAdmin: Redirect to Index on Create/Update</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/26/simple-rails-form-honeypot/">Simple Rails Form Honeypot</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/23/activeadmin-custom-metasearch-filter/">ActiveAdmin: Custom MetaSearch Filter</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/05/activerecord-random-ordering-with-pagination/">ActiveRecord Random Ordering with Pagination</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/19/track-backbone-dot-js-page-views-with-google-analytics/">Track Backbone.js Page Views with Google Analytics</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/activeadmin'>activeadmin (2)</a></li><li><a href='/blog/categories/activerecord'>activerecord (1)</a></li><li><a href='/blog/categories/backbone'>backbone (1)</a></li><li><a href='/blog/categories/capistrano'>capistrano (1)</a></li><li><a href='/blog/categories/git'>git (1)</a></li><li><a href='/blog/categories/mobile'>mobile (1)</a></li><li><a href='/blog/categories/mysql'>mysql (3)</a></li><li><a href='/blog/categories/phonegap'>phonegap (1)</a></li><li><a href='/blog/categories/postgresql'>postgresql (2)</a></li><li><a href='/blog/categories/rails'>rails (8)</a></li><li><a href='/blog/categories/routing'>routing (1)</a></li><li><a href='/blog/categories/rspec'>rspec (1)</a></li><li><a href='/blog/categories/sinatra'>sinatra (1)</a></li></ul>
+</section>
+
+  
+</aside>
+
+      </div>
+    </div>
+    <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Travis Roberts -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>. Design by <a href="http://octopressthemes.com">Octopress Themes</a></span>
+</p>
+
+</footer>
+    
+
+<script type="text/javascript">
+      var disqus_shortname = 'travisr';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+  </div>
+</body>
+</html>
